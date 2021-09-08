@@ -1,16 +1,18 @@
 import logo from './logo.svg';
 import './App.css';
 import { useEffect, useState } from 'react';
+
+//@ts-ignore
 import fetch from 'node-fetch'
 
 function App() {
 
-  const [result, setResult] = useState()
+  const [result, setResult] = useState<any[]>()
   const [error, setError] = useState()
 
   useEffect(()=> {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:3005/investors/fetch_all")
+      const response = await fetch("http://localhost:3005/investors/fetch_all", {})
       const data = await response.json()
       console.log(data)
       setResult(data)
@@ -29,6 +31,11 @@ function App() {
   if (error) {
     return <div> Error : {error} </div>
   }
+
+  if (!result) {
+    return <div> No Result</div>
+  }
+  
 
   return (
     <div className="App">
