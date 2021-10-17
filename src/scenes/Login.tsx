@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from 'react';
 
 import fetch from 'node-fetch'
+import { Link } from 'react-router-dom';
+type LoginPropType = {setLoggedIn:(val:boolean)=>void, isLoggedIn:boolean}
 
-function Login() {
+function Login(props:LoginPropType) {
 
-  const [result, setResult] = useState<any[]>()
-  const [error, setError] = useState()
-
-  if (!result && !error) {
-    return <div>Loading</div>
+  const handleLoginButtonClick = () => {
+    // todo: query mongo db to get login user name and pw that user submitted
+    // query server wiht those values and see whether they're valid
+    // call props.setLoggedIn if so
+    props.setLoggedIn(!props.isLoggedIn)
   }
-
-  if (error) {
-    return <div> Error : {error} </div>
-  }
-
-  if (!result) {
-    return <div> No Result</div>
-  }
-  
-
+ 
   return (
     <div className="Login">
+      <label> User Id </label>
+      <input/>
+      <br/>
+      <label> Password </label>
+      <input/>
+    <br/>
+      <button 
+        onClick={handleLoginButtonClick}>
+        Login
+      </button>
+      <br/>
+      <label>No account?</label>
+      { /*todo: go to SignUp page*/ }
+      <Link to = "/signup"> Sign Up </Link>
       <header className="Login-header">
-        {/*result.map(item => <div>{item.symbol}: {item.name}</div>)*/}
-        {result.map(item => <pre>{JSON.stringify(item, null, 2)}</pre>)}
-
       </header>
     </div>
   );
