@@ -15,7 +15,7 @@ import Overview from './scenes/Overview';
 
 export default function App() {
 
-  const [loggedIn, setLoggedIn] = useState(true)
+  const [loggedIn, setLoggedIn] = useState(false)
   const handleUserLogin = (val:boolean) => {
     setLoggedIn(val)
   }
