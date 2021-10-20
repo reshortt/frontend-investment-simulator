@@ -29,7 +29,7 @@ function Login(props: LoginPropType) {
         "http://localhost:3005/login",
         requestOptions
       );
-      const data = await response.json();
+      const data = JSON.stringify(await response.json());
       console.log("setting result to  " + data);
     };
     fetchData();

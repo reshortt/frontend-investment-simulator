@@ -9,7 +9,6 @@ function SignUp() {
   const [typedName, setTypedName] = useState("");
 
   const handleSignUpButtonClick = () => {
-    console.log("handle signup button click");
     const fetchData = async () => {
       const requestOptions = {
         method: "POST",
@@ -17,7 +16,7 @@ function SignUp() {
         body: JSON.stringify({
           email: typedEmail,
           password: typedPassword,
-          name: typedName
+          name: typedName,
         }),
       };
       const response = await fetch(
@@ -25,8 +24,13 @@ function SignUp() {
         requestOptions
       );
 
-      const data = await response.json();
-      console.log("setting signup results to " + data)
+      const status: number = await response.status;
+      const json: string = await response.json();
+
+      if (status === 200)
+        console.log(
+          "json response of successful add is " + JSON.stringify(json)
+        );
     };
     fetchData();
   };
@@ -49,7 +53,7 @@ function SignUp() {
     <div className="SignUp">
       <label> Name </label>
       <input name="typedName" onChange={handleUserInput} />
-      <br/>
+      <br />
       <label> Email </label>
       <input name="typedEmail" onChange={handleUserInput} />
       <br />
