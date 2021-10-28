@@ -17,7 +17,7 @@ export default function Navbar() {
 
   const history = useHistory();
   const handleOnClick = useCallback(
-    () => history.push(buttonClicked),
+       () => history.push(buttonClicked),
     [history]
   );
 

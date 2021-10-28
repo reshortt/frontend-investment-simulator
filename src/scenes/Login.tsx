@@ -38,10 +38,9 @@ function Login(props: any) {
 
       switch (response.status) {
         case 200:
-          const token = await response.text();
-          sessionStorage.setItem(AUTH_TOKEN_KEY, token)
-          console.log("Successful login: " + token);
-          props.dispatch(ActionCreators.login(token));
+          const responseObj = await response.json();
+          sessionStorage.setItem(AUTH_TOKEN_KEY, responseObj.token)
+          console.log("Successful login: " + responseObj);
 
           // TODO log someone in, make it available everywhere
 
@@ -50,7 +49,7 @@ function Login(props: any) {
 
         case 401:
           // todo: better way to show error
-          console.log(await response.text());
+          console.log(await response.json());
           break;
 
         default:

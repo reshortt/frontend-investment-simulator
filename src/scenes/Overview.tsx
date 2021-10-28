@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { isJSDocUnknownTag } from 'typescript';
 import { AUTH_TOKEN_KEY } from '../constants';
+const jwt = require("jsonwebtoken");
 
 
 const getBalance =  () : number =>  {
@@ -25,11 +27,12 @@ const getBalance =  () : number =>  {
 function Overview() {
 
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY)
-  console.log("token = " + token);
+  console.log("token = " , token);
+
   return (
     <div className="Overview">
-      <label> Balance:  </label>
-      <label> Balance for  + {getBalance} </label>
+
+      {/*<label> Balance for {myObj.userName} ( {myObj.userEmail}) ${getBalance()} </label>*/}
       <br/>
       
     
