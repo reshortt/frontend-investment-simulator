@@ -3,67 +3,33 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import fetch from "node-fetch";
 import { Link } from "react-router-dom";
 import { setConstantValue } from "typescript";
-import { AUTH_TOKEN_KEY } from "../constants"
 
 
-import { connect } from 'react-redux';
+import { AnyIfEmpty, connect } from 'react-redux';
 import { withRouter} from "react-router-dom";
 import { ActionCreators } from '../redux/actionCreators/profile'
+import {doLogin} from "../APIService"
 
 type LoginPropType = {
   setLoggedIn: (val: boolean) => void;
   isLoggedIn: boolean;
 };
-//TODO Type this better
+//TODO: go back to LoginPropType after vscode stops complaining
 function Login(props: any) {
   const [typedPassword, setTypedPassword] = useState("");
   const [typedEmail, setTypedEmail] = useState("");
 
-  const doLogin = () => {
+  const handleLoginButtonClick = () => {
     console.log("handle button click");
     // todo: query mongo db to get login user name and pw that user submitted
     // query server wiht those values and see whether they're valid
     // call props.setLoggedIn if so
-    //props.setLoggedIn(!props.isLoggedIn)
-    const fetchData = async () => {
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: typedEmail, password: typedPassword }),
-      };
-      const response = await fetch(
-        "http://localhost:3005/login",
-        requestOptions
-      );
-
-      switch (response.status) {
-        case 200:
-          const responseObj = await response.json();
-          sessionStorage.setItem(AUTH_TOKEN_KEY, responseObj.token)
-          console.log("Successful login: " + responseObj);
-
-          // TODO log someone in, make it available everywhere
-
-          window.location.assign("/overview")
-          break;
-
-        case 401:
-          // todo: better way to show error
-          console.log(await response.json());
-          break;
-
-        default:
-          // 500 is possible for critical server erropr
-          console.log("unexpected login response");
-          break;
-      }
-    };
-    fetchData();
-  };
-
-  const handleLoginButtonClick = () => {
-    doLogin()
-  }
+;
+    doLogin(typedEmail, typedPassword).then((wasLoginSuccessful:boolean) => {
+      props.setLoggedIn(wasLoginSuccessful);
+    })
+  };    //props.setLoggedIn(!props.isLoggedIn)
+    
 
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {

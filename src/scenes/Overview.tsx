@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { isJSDocUnknownTag } from 'typescript';
+import { getUser } from '../APIService';
 import { AUTH_TOKEN_KEY } from '../constants';
 const jwt = require("jsonwebtoken");
 
@@ -24,11 +25,17 @@ const getBalance =  () : number =>  {
 //   }
 // }
 
-function Overview() {
+ function Overview() {
 
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY)
   console.log("token = " , token);
-
+  const [user, setUser] = useState<Record<string,unknown>>({})
+  
+  //TODO Use a useEffect hook to safely retrieve the information once.
+  useEffect(()=>{
+    getUser().then((userThatWasFound:Record<string,unknown>)=>{setUser(userThatWasFound)})
+  },[])
+    
   return (
     <div className="Overview">
 
@@ -37,6 +44,7 @@ function Overview() {
       
     
       <br/>
+      {`${user.name}`}
       <header className="Overview-header">
       </header>
     </div>
