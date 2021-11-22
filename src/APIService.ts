@@ -38,7 +38,8 @@ export const doLogin = async (email:string, password:string) : Promise<boolean> 
   export const getUser = async () : Promise<Record<string, unknown>> => {
     const requestOptions = {
         method: "GET",
-        headers: { "Authorization": `Bearer ${sessionStorage.getItem(AUTH_TOKEN_KEY)}` }
+        // back-ticks are template literals (strings)
+        headers: { "authorization": `Bearer ${sessionStorage.getItem(AUTH_TOKEN_KEY)}` }
       
       };
       const response = await fetch(
@@ -53,7 +54,7 @@ export const doLogin = async (email:string, password:string) : Promise<boolean> 
           console.log("User successfully retrieved: " + userResponseObj);
         // TODO log someone in, make it available everywhere
   
-          window.location.assign("/overview")
+        //  window.location.assign("/overview")
           return userResponseObj
   
         case 401:
