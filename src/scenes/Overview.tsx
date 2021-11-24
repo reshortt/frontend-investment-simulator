@@ -1,25 +1,22 @@
 import userEvent from "@testing-library/user-event";
 import React, { useEffect, useState } from "react";
 import { isJSDocUnknownTag } from "typescript";
-import { getUser } from "../APIService";
+import { getBalance, getUser } from "../APIService";
 import { AUTH_TOKEN_KEY } from "../constants";
 const jwt = require("jsonwebtoken");
-
-const getBalance = (): number => {
-  // todo: get balance from mongo db
-  return 1074324.45;
-};
 
 function Overview() {
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
   console.log("token = ", token);
   const [user, setUser] = useState<Record<string, unknown>>({});
+  const [balance, setBalance] = useState(0);
   console.log("Calling get user");
 
   //TODO Use a useEffect hook to safely retrieve the information once.
   useEffect(() => {
     getUser().then((userThatWasFound) => {
       setUser(userThatWasFound);
+      getBalance().then((userBalance) => setBalance(userBalance))
     });
   },[user._id]);
 
@@ -27,9 +24,10 @@ function Overview() {
 
   return (
     <div className="Overview">
-      {/*<label> Balance for {myObj.userName} ( {myObj.userEmail}) ${getBalance()} </label>*/}
+    {<label> Balance for {userName}  is ${balance} </label>}
       <br />
         {userName} is {user._id}
+        
       <br />
       {`${user.name}`}
       <header className="Overview-header"></header>

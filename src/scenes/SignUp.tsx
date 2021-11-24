@@ -27,10 +27,12 @@ function SignUp() {
       const status: number = await response.status;
       const json: string = await response.json();
 
-      if (status === 200)
+      if (status === 200) {
+        window.location.assign("/login")
         console.log(
           "json response of successful add is " + JSON.stringify(json)
         );
+      }
     };
     fetchData();
   };
