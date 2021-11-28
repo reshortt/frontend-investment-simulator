@@ -1,5 +1,5 @@
 import { AUTH_TOKEN_KEY } from "./constants"
-import { Asset } from "./types";
+import { Asset, UserInfo } from "./types";
 
 export const isLoggedIn = ():boolean => !!sessionStorage.getItem(AUTH_TOKEN_KEY)
 
@@ -36,7 +36,7 @@ export const doLogin = async (email:string, password:string) : Promise<boolean> 
     }
   }
 
-  export const getUser = async () : Promise<Record<string, unknown>> => {
+  export const getUser = async () : Promise<UserInfo> => {
     const requestOptions = {
         method: "GET",
         // back-ticks are template literals (strings)

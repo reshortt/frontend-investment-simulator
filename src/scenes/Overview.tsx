@@ -1,34 +1,29 @@
 import { useEffect, useState } from "react";
 import { getBalance, getUser } from "../APIService";
 import { AUTH_TOKEN_KEY } from "../constants";
+import { UserInfo } from "../types";
 const jwt = require("jsonwebtoken");
 
 function Overview() {
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
-  console.log("token = ", token);
-  const [user, setUser] = useState<Record<string, unknown>>({});
+  const [user, setUser] = useState<UserInfo>();
   const [balance, setBalance] = useState(0);
   const [yesterdayBalance, setYesterdayBalance] = useState(0);
-  console.log("Calling get user");
 
   useEffect(() => {
-    getUser().then((userThatWasFound) => {
-      setUser(userThatWasFound);
-      getBalance(false).then((balance) => setBalance(balance));
-      getBalance(true).then((yesterdayBalance) =>
-        setYesterdayBalance(yesterdayBalance)
-      );
-    });
-  }, [user._id]);
-
-  const userName = user.name;
+    getUser().then((userThatWasFound) => setUser(userThatWasFound));
+    getBalance(false).then((balance) => setBalance(balance));
+    getBalance(true).then((yesterdayBalance) =>
+      setYesterdayBalance(yesterdayBalance)
+    );
+  }, []);
 
   return (
     <div className="Overview">
       {
         <label>
           {" "}
-          Balance for {userName} is ${balance}{" "}
+          Balance for {user?.name} is ${balance}{" "}
         </label>
       }
       <br />
