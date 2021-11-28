@@ -1,21 +1,12 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
-import fetch from "node-fetch";
 import { Link } from "react-router-dom";
-import { setConstantValue } from "typescript";
 
-
-import { AnyIfEmpty, connect } from 'react-redux';
+import { connect } from 'react-redux';
 import { withRouter} from "react-router-dom";
-import { ActionCreators } from '../redux/actionCreators/profile'
 import {doLogin} from "../APIService"
 
-type LoginPropType = {
-  setLoggedIn: (val: boolean) => void;
-  isLoggedIn: boolean;
-};
-//TODO: go back to LoginPropType after vscode stops complaining
-function Login(props: any) {
+function Login() {
   const [typedPassword, setTypedPassword] = useState("");
   const [typedEmail, setTypedEmail] = useState("");
 
@@ -25,11 +16,8 @@ function Login(props: any) {
     // query server wiht those values and see whether they're valid
     // call props.setLoggedIn if so
 ;
-    doLogin(typedEmail, typedPassword).then((wasLoginSuccessful:boolean) => {
-      props.setLoggedIn(wasLoginSuccessful);
-    })
-  };    //props.setLoggedIn(!props.isLoggedIn)
-    
+    doLogin(typedEmail, typedPassword)
+  }
 
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {

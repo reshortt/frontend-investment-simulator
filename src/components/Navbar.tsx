@@ -1,6 +1,5 @@
 import styled from "styled-components/macro";
 
-import React, { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 enum ClickTypes {
@@ -9,17 +8,12 @@ enum ClickTypes {
   activity = "/activity",
   analysis = "/analysis",
   trade = "/trade"
-
 }
 
 export default function Navbar() {
-  const [buttonClicked, setButtonClicked] = useState(ClickTypes.overview);
 
   const history = useHistory();
-  const handleOnClick = useCallback(
-       () => history.push(buttonClicked),
-    [history]
-  );
+  const handleOnClick = (page:ClickTypes) => history.push(page);
 
   const Container = styled.div`
     width: 100%;
@@ -30,8 +24,7 @@ export default function Navbar() {
     <Container>
       <button
         onClick={() => {
-          setButtonClicked(ClickTypes.overview);
-          handleOnClick();
+          handleOnClick(ClickTypes.overview);
         }}
       >
         {" "}
@@ -39,8 +32,7 @@ export default function Navbar() {
       </button>
       <button
         onClick={() => {
-          setButtonClicked(ClickTypes.positions);
-          handleOnClick();
+          handleOnClick(ClickTypes.positions);
         }}
       >
         {" "}
@@ -49,8 +41,7 @@ export default function Navbar() {
 
       <button
         onClick={() => {
-          setButtonClicked(ClickTypes.activity);
-          handleOnClick();
+          handleOnClick(ClickTypes.activity);
         }}
       >
         {" "}
@@ -60,8 +51,7 @@ export default function Navbar() {
 
       <button
         onClick={() => {
-          setButtonClicked(ClickTypes.analysis);
-          handleOnClick();
+          handleOnClick(ClickTypes.analysis);
         }}
       >
         {" "}
@@ -71,8 +61,7 @@ export default function Navbar() {
 
       <button
         onClick={() => {
-          setButtonClicked(ClickTypes.trade);
-          handleOnClick();
+          handleOnClick(ClickTypes.trade);
         }}
       >
         {" "}

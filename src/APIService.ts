@@ -1,4 +1,5 @@
 import { AUTH_TOKEN_KEY } from "./constants"
+import { Asset } from "./types";
 
 export const isLoggedIn = ():boolean => !!sessionStorage.getItem(AUTH_TOKEN_KEY)
 
@@ -35,9 +36,6 @@ export const doLogin = async (email:string, password:string) : Promise<boolean> 
     }
   }
 
-  
-
-  // TODO better type
   export const getUser = async () : Promise<Record<string, unknown>> => {
     const requestOptions = {
         method: "GET",
@@ -72,12 +70,12 @@ export const doLogin = async (email:string, password:string) : Promise<boolean> 
       }
   }
 
-  export const getBalance = async () : Promise<number> => {
+  export const getBalance = async (yesterday:boolean) : Promise<number> => {
     const requestOptions = {
         method: "GET",
         // back-ticks are template literals (strings)
-        headers: { "authorization": `Bearer ${sessionStorage.getItem(AUTH_TOKEN_KEY)}` }
-      
+        headers: { "authorization": `Bearer ${sessionStorage.getItem(AUTH_TOKEN_KEY)}` },
+        query: {yesterday: yesterday}
       };
       const response = await fetch(
         "http://localhost:3005/API/getBalance",
@@ -106,3 +104,33 @@ export const doLogin = async (email:string, password:string) : Promise<boolean> 
           return userResponseObj;
       }
   }
+
+  export const getAssets = async () : Promise<Asset[]> => {
+    const requestOptions = {
+      method: "GET",
+      // back-ticks are template literals (strings)
+      headers: { "authorization": `Bearer ${sessionStorage.getItem(AUTH_TOKEN_KEY)}` },
+    };
+    const response = await fetch(
+      "http://localhost:3005/API/getAssets",
+      requestOptions
+    );
+
+
+    switch (response.status) {
+      case 200:
+        const userResponseObj = await response.json();
+
+       console.log("Assets retrieved: " + userResponseObj.assets)
+        return userResponseObj.assets
+
+      case 401:
+        // todo: better way to show error
+        console.log(await response.json());
+        return userResponseObj;
+
+      default:
+        // 500 is possible for critical server erropr
+        console.log("unexpected getAssets response");
+        return userResponseObj;
+    }  }

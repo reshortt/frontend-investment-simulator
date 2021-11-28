@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import Assets from "./scenes/Assets";
 import Login from "./scenes/Login";
 import Header from "./components/Header";
 import Navbar from "./components/Navbar";
@@ -7,14 +5,11 @@ import SignUp from "./scenes/SignUp";
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Overview from "./scenes/Overview";
-import { getUser, isLoggedIn } from "./APIService";
+import {isLoggedIn } from "./APIService";
+import Trade from "./scenes/Trade";
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const handleUserLogin = (val: boolean) => {
-    setLoggedIn(val);
-  };
-
+  
   return (
     <Router>
       <div>
@@ -28,7 +23,7 @@ export default function App() {
           </Route>
           <Route path="/login">
             {!isLoggedIn() ? (
-              <Login setLoggedIn={handleUserLogin} isLoggedIn={loggedIn} />
+              <Login/>
             ) : (
               <Overview />
             )}
@@ -36,9 +31,12 @@ export default function App() {
           <Route path="/overview">
             <Overview />
           </Route>
+          <Route path = "/trade">
+            <Trade/>
+          </Route>
           <Route path="/">
             {!isLoggedIn() ? (
-              <Login setLoggedIn={handleUserLogin} isLoggedIn={loggedIn} />
+              <Login/>
             ) : (
               <Overview />
             )}
