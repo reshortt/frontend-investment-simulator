@@ -11,11 +11,6 @@ function Login() {
   const [typedEmail, setTypedEmail] = useState("");
 
   const handleLoginButtonClick = () => {
-    console.log("handle button click");
-    // todo: query mongo db to get login user name and pw that user submitted
-    // query server wiht those values and see whether they're valid
-    // call props.setLoggedIn if so
-;
     doLogin(typedEmail, typedPassword)
   }
 
@@ -47,13 +42,5 @@ function Login() {
   );
 }
 
-
-// TODO when we figure out our state structure we can type this better.
-const mapStateToProps = (state: any) => {
-  return {
-    profile: state.user.profile
-  }
-}
-
-export default connect(mapStateToProps)(withRouter(Login))
+export default Login
 

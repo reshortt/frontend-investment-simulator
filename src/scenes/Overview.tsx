@@ -5,7 +5,6 @@ import { UserInfo } from "../types";
 const jwt = require("jsonwebtoken");
 
 function Overview() {
-  const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
   const [user, setUser] = useState<UserInfo>();
   const [balance, setBalance] = useState(0);
   const [yesterdayBalance, setYesterdayBalance] = useState(0);
