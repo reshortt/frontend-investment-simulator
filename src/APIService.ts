@@ -1,8 +1,6 @@
 import { AUTH_TOKEN_KEY } from "./constants";
 import { Asset, StockPrices, UserInfo } from "./types";
 import fetch, {RequestInit} from 'node-fetch'
-import { lookup } from "dns";
-import { createImportSpecifier } from "typescript";
 
 const createRequestAuthorization = (methodType="GET"):RequestInit => {
    return {
@@ -153,9 +151,9 @@ export const lookupTicker = async (tickerSymbol:string) : Promise<Asset | undefi
       const userResponseObj = await response.json();
       return userResponseObj;
 
-    case 401:
+    case 400:
       // todo: better way to show error
-      console.log(await response.json());
+      //console.log(await response.json());
       return undefined;
 
     default:
@@ -184,9 +182,9 @@ export const getStockPrice = async (tickerSymbol:string) : Promise<StockPrices> 
     requestOptions
   );
 
-  console.log("response: ", response.status)
 
   const userResponseObj = await response.json();
+  console.log("response: ", response.status)
 
 
   switch (response.status) {
