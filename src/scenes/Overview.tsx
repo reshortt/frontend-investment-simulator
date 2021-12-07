@@ -5,7 +5,7 @@ import { UserInfo } from "../types";
 const jwt = require("jsonwebtoken");
 
 function Overview() {
-  const [user, setUser] = useState<UserInfo>();
+  const [user, setUser] = useState<UserInfo| null>();
   const [balance, setBalance] = useState(0);
   const [yesterdayBalance, setYesterdayBalance] = useState(0);
 
