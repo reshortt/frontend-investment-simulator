@@ -14,6 +14,6 @@ enum TransactionType {
 }
 // backend only
 
-export const commission:number = 15
+export const COMMISSION:number = 15
 
 

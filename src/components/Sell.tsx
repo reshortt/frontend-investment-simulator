@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { getAssets, getStockPrice } from "../APIService";
-import { Asset, commission, StockPrices } from "../types";
+import { Asset, COMMISSION, StockPrices } from "../types";
 
 export default function Sell() {
     const [assets, setAssets] = useState<Asset[]>();
@@ -50,11 +50,11 @@ export default function Sell() {
       <br />
 
       <label>Commission</label>
-      <label> ${commission}</label>
+      <label> ${COMMISSION}</label>
       <br />
 
       <label>Total Proceeds </label>
-      <label> ${price.ask * sharesToCell - commission} </label>
+      <label> ${price.ask * sharesToCell - COMMISSION} </label>
       <br />
 
       <button>Confirm Sale</button>
