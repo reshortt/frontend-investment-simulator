@@ -17,10 +17,11 @@ export default function Buy() {
   const [shareCost, setShareCost] = useState<number>(0);
   const [asset, setAsset] = useState<Asset | null>();
   const [cash, setCash] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+  //const [loading, setLoading] = useState<boolean>(false);
 
   //const currentTypedSymbol = useRef<string>("");
-  //const isLoading = useRef<boolean>(false);
+  const loadingStock = useRef<boolean>(false);
+  const loadingPrice = useRef<boolean>(false);
 
   const handleTickerSymbol = (e: ChangeEvent<HTMLInputElement>) => {
     setTypedSymbol(e.target.value);
@@ -38,35 +39,42 @@ export default function Buy() {
 
   useEffect(() => {
     console.log("1. loading -> ", true);
-    setLoading(true);
+    //setLoading(true);
     //isLoading.current = true;
-
+    loadingStock.current = true;
     //currentTypedSymbol.current = typedSymbol;
-    lookupTicker(typedSymbol).then((asset) => {
+    lookupTicker(typedSymbol).then((foundAsset) => {
       // if (typedSymbol === currentTypedSymbol.current) {
-      console.log("2. loading -> ", false);
+      // console.log("2. loading -> ", false);
       // setLoading(false);
-      console.log("Setting company name to ", typedSymbol, "->", asset);
-      setAsset(asset);
-      if (asset) {
+      loadingStock.current = false;
+      console.log("Setting company name to ", typedSymbol, "->", foundAsset);
+      setAsset(foundAsset);
+      if (foundAsset) {
         //console.log("3. loading -> ", true);
         //setLoading(loading + 1);
         //isLoading.current = true;
         //setLoading(true);
-        getStockPrice(asset.symbol).then((foundPrice) => {
+        loadingPrice.current = true
+        getStockPrice(foundAsset.symbol).then((foundPrice) => {
           console.log("4. loading -> ", false);
           //setLoading(false);
           //isLoading.current = false;
           //console.log("Setting price to ", foundPrice);
+          loadingPrice.current = false
           setPrice(foundPrice);
-        });
+        }).catch((ex: Error) => {
+          loadingPrice.current = false
+        });;
       } else {
         setPrice(null);
       }
       //isLoading.current = false
-      setLoading(false)
+      loadingStock.current = false
 
       //    }
+    }).catch((ex: Error) => {
+      loadingStock.current = false
     });
   }, [typedSymbol]);
 
@@ -102,7 +110,8 @@ export default function Buy() {
     }
   };
 
-  console.log("isLoading is ========>>> ", loading, " before rendering")
+  console.log("isLoadingPrice is ========>>> ", loadingPrice.current, " before rendering")
+  console.log("isLoadingStock is ========>>> ", loadingStock.current, " before rendering")
 
   return (
     <div>
@@ -110,11 +119,11 @@ export default function Buy() {
       <input type="text" onChange={handleTickerSymbol} />
       <label color={getForegroundColor()}>
         {" "}
-        {loading ? "..." : getCompanyText()}{" "}
+        {loadingStock.current ? "..." : getCompanyText()}{" "}
       </label>
       <br />
       <label>Current Ask Price </label>
-      <label> ${loading ? "..." : price ? price.ask : 0}</label>
+      <label> ${(loadingStock.current || loadingPrice.current) ? "..." : (price ? price.ask : 0)}</label>
       <br />
 
       <label>Shares to buy </label>
@@ -122,15 +131,15 @@ export default function Buy() {
       <br />
 
       <label>Share cost </label>
-      <label> ${loading ? "..." : shareCost} </label>
+      <label> ${loadingStock.current || loadingPrice.current ? "..." : shareCost} </label>
       <br />
 
       <label> Commission </label>
-      <label> ${loading ? "..." : shareCost > 0 ? COMMISSION : 0} </label>
+      <label> ${loadingStock.current || loadingPrice.current ? "..." : shareCost > 0 ? COMMISSION : 0} </label>
       <br />
 
       <label>Total Cost </label>
-      <label> ${loading ? "..." : totalCost} </label>
+      <label> ${loadingStock.current || loadingPrice.current ? "..." : totalCost} </label>
       <br />
 
       <button onClick={handlePurchase}>Confirm Purchase</button>
