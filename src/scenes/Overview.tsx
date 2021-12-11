@@ -42,7 +42,8 @@ function Overview() {
       <br />
       <label> Day Change: ${(loadingBalance || loadingYesterdayBalance) ? "..." : balance - yesterdayBalance}</label>
       <br />
-      <label> Total Gain/Loss: ${loadingBalance ? "..." : (balance - 1000000.00)}</label>
+      <label> Total Gain/Loss:</label>
+      <label style={((balance - 1000000.00) < 0  && !loadingBalance)? {color:"red"}: {color:undefined}}> ${loadingBalance ? "..." : (balance - 1000000.00)}</label>
       <header className="Overview-header"></header>
     </div>
   );
