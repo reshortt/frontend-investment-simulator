@@ -177,7 +177,7 @@ export const getCash = async (): Promise<number> => {
       return userResponseObj;
   }
 };
-//lookup
+//TODO: don't lookup empty or null string
 export const lookupTicker = async (
   tickerSymbol: string
 ): Promise<Asset | null> => {
