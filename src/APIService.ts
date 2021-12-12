@@ -287,3 +287,19 @@ export const getStockPrice = async (
       return userResponseObj;
   }
 };
+
+export const getShareCount = ((asset:Asset|null|undefined):number => {
+
+  console.log("get Share count for ", asset?.symbol, " with ", asset?.lots)
+
+  var totalCount:number = 0
+  if (!asset)
+    return  0
+
+  asset.lots.map((currLot) => {
+    totalCount += currLot.shares
+  })
+
+  console.log (" ---> share count = ", totalCount)
+  return totalCount
+})
