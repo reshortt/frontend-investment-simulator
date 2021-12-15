@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Overview from "./scenes/Overview";
 import {isLoggedIn } from "./APIService";
 import Trade from "./scenes/Trade";
+import Positions from "./scenes/Positions";
 
 export default function App() {
   
@@ -28,6 +29,9 @@ export default function App() {
           </Route>
           <Route path="/overview">
             <Overview />
+          </Route>
+          <Route path="/positions">
+            <Positions />
           </Route>
           <Route path = "/trade">
             <Trade/>
