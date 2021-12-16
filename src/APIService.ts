@@ -1,5 +1,5 @@
 import { AUTH_TOKEN_KEY } from "./constants";
-import { Asset, StockPrices, Transaction, UserInfo } from "./types";
+import { Asset, StockPrices, Transaction, User } from "./types";
 import fetch, { RequestInit } from "node-fetch";
 
 const createRequestAuthorization = (methodType = "GET"): RequestInit => {
@@ -47,7 +47,7 @@ export const doLogin = async (
   }
 };
 
-export const getUser = async (): Promise<UserInfo | null> => {
+export const getUser = async (): Promise<User | null> => {
   const requestOptions = createRequestAuthorization();
   const response = await fetch(
     "http://localhost:3005/API/getUser",

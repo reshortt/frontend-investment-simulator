@@ -16,6 +16,7 @@ export default function App() {
       <div>
         <Header />
         {isLoggedIn() && <Navbar />}
+        <br/>
         <Switch>
           <Route path="/signup">
             <SignUp />

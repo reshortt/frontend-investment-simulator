@@ -1,62 +1,19 @@
 import { useEffect, useState } from "react";
 import { getUser } from "../APIService";
-import { Asset, UserInfo } from "../types";
+import { User } from "../types";
 import { Table } from "antd";
-
-const jwt = require("jsonwebtoken");
+import {
+  formatCurrency,
+  formatPercent,
+  getAssetValue,
+  getCostBasis,
+  getGainLoss,
+  getPercentOfAccount,
+  getQuantity,
+} from "../Calculations";
 
 function Positions() {
-  const [user, setUser] = useState<UserInfo | null>();
-
-  const getCostBasis = (asset: Asset): number => {
-    var costBasis: number = 0;
-    for (var lot of asset.lots) {
-      console.log(lot);
-      costBasis += lot.basis * lot.shares;
-    }
-    return costBasis;
-  };
-
-  const getQuantity = (asset: Asset): number => {
-    var quantity: number = 0;
-    for (var lot of asset.lots) {
-      quantity += lot.shares;
-    }
-    return quantity;
-  };
-
-  const getAssetValue = (asset: Asset): number => {
-    return getQuantity(asset) * (asset.price.bid || asset.price.previousClose);
-  };
-
-  const getAccountValue = (user: UserInfo): number => {
-    var total: number = 0;
-    for (var asset of user.assets) {
-      total += getAssetValue(asset);
-    }
-    return total + user.cash;
-  };
-
-  const getPercentOfAccount = (user: UserInfo, asset: Asset): number => {
-    console.log("percent of ", asset.name, ": ", (getAssetValue(asset) / getAccountValue(user)))
-    return (getAssetValue(asset) / getAccountValue(user))
-  };
-
-  const getGainLoss = (asset: Asset): number => {
-    return getAssetValue(asset) - getCostBasis(asset);
-  };
-
-  const getCash = (user: UserInfo): number => {
-    return user.cash;
-  };
-
-  const formatCurrency = (money:number):string => {
-      return "$" + new Intl.NumberFormat("en-us", {minimumFractionDigits: 2, maximumFractionDigits: 2}).format(money)
-     }
-
-     const formatPercent = (percent:number):string => {
-         return new Intl.NumberFormat("en-us", {minimumFractionDigits: 2, maximumFractionDigits: 2}).format(100* percent) + "%"
-     }
+  const [user, setUser] = useState<User | null>();
 
   const getData = (): object[] => {
     const data: object[] = [];
@@ -65,12 +22,14 @@ function Positions() {
         data.push({
           name: asset.name,
           symbol: asset.symbol,
-          lastPrice: formatCurrency(asset.price.bid || asset.price.previousClose),
+          lastPrice: formatCurrency(
+            asset.price.bid || asset.price.previousClose
+          ),
           quantity: getQuantity(asset),
           costBasis: formatCurrency(getCostBasis(asset)),
           currentValue: formatCurrency(getAssetValue(asset)),
           percentOfAccount: formatPercent(getPercentOfAccount(user, asset)),
-          gain: formatCurrency(getGainLoss(asset))
+          gain: formatCurrency(getGainLoss(asset)),
         });
       }
     }
@@ -78,7 +37,6 @@ function Positions() {
       data.push({
         name: "Cash",
         currentValue: formatCurrency(user.cash),
-        percentOfAccount: formatPercent(getCash(user) / getAccountValue(user)),
       });
     }
     return data;
@@ -96,8 +54,12 @@ function Positions() {
         key: "currentValue",
       },
       { title: "Cost Basis", dataIndex: "costBasis", key: "costBasis" },
-    
-      { title: "Percentage of Account", dataIndex: "percentOfAccount", key: "percentOfAccount" },
+
+      {
+        title: "Percentage of Account",
+        dataIndex: "percentOfAccount",
+        key: "percentOfAccount",
+      },
       { title: "Total Gain/Loss", dataIndex: "gain", key: "gain" },
     ];
   };
@@ -117,4 +79,5 @@ function Positions() {
   );
 }
 
-export default Positions;
+export default Positions
+
