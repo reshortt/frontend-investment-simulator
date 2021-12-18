@@ -268,7 +268,7 @@ export const getStockPrice = async (
   const response = await fetch(getStockPriceUrl, requestOptions);
 
   const userResponseObj = await response.json();
-  console.log("response: ", response.status);
+  console.log("Get Stock Price Response:: ", userResponseObj);
 
   switch (response.status) {
     case 200:

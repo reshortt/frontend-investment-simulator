@@ -1,3 +1,5 @@
+import moment from "moment";
+import { format, isValid } from "date-fns";
 import { Asset, INITIAL_GIFT, User } from "./types";
 
 export const getCostBasis = (asset: Asset): number => {
@@ -21,9 +23,9 @@ export const getAssetValue = (asset: Asset): number => {
   return getQuantity(asset) * (asset.price.bid || asset.price.previousClose);
 };
 
-export const getGain= (user:User):number =>  {
-    return getAccountValue(user) - INITIAL_GIFT
-}
+export const getGain = (user: User): number => {
+  return getAccountValue(user) - INITIAL_GIFT;
+};
 
 export const getAccountValue = (user: User): number => {
   var total: number = 0;
@@ -68,4 +70,21 @@ export const formatPercent = (percent: number): string => {
       maximumFractionDigits: 2,
     }).format(100 * percent) + "%"
   );
+};
+
+// export const  formatDate = (date: Date): string => {
+//   if (!date) return "";
+
+//   var parsedDate = moment("MMMM dd, YYYY");
+//   const origString:string = new Date(date).toString();
+//   console.log("Trying to convert date: ", date, " -> ", origString)
+//   const formatted:string = parsedDate.format(origString);
+//   console.log("---> parsed to ", formatted)
+//   return formatted
+// };
+
+export const formatDate = (date: Date): string => {
+  var dateToFormat:Date = new Date(date)
+  if (!isValid(dateToFormat)) return "";
+  return format(dateToFormat, "MMMM dd, yyyy");
 };

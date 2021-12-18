@@ -12,6 +12,7 @@ export default function Buy() {
     bid: 0,
     ask: 0,
     previousClose: 0,
+    historicalPrices: [],
   });
   const [totalCost, setTotalCost] = useState<number>(0);
   const [shareCost, setShareCost] = useState<number>(0);
@@ -39,22 +40,13 @@ export default function Buy() {
 
   useEffect(() => {
     console.log("1. loading -> ", true);
-    //setLoading(true);
-    //isLoading.current = true;
+
     setLoadingStock(true);
     currentTypedSymbol.current = typedSymbol;
     lookupTicker(typedSymbol)
       .then((foundAsset) => {
         if (typedSymbol === currentTypedSymbol.current) {
-          // console.log("2. loading -> ", false);
-          // setLoading(false);
           setLoadingStock(false);
-          console.log(
-            "Setting company name to ",
-            typedSymbol,
-            "->",
-            foundAsset
-          );
           setAsset(foundAsset);
           if (foundAsset) {
             //console.log("3. loading -> ", true);
@@ -93,6 +85,7 @@ export default function Buy() {
       setTotalCost(
         shareOnlyCost > 0 ? shareOnlyCost + COMMISSION : shareOnlyCost
       );
+      console.log("Historical prices: ", price.historicalPrices);
     } else {
       setShareCost(0);
       setTotalCost(0);
@@ -116,14 +109,19 @@ export default function Buy() {
       window.alert("You don't have enough cash for  that purchase ");
     } else {
       if (asset) {
-        const msg:string = "Please confirm purchase of " + sharesToBuy + " shares of " + asset.name + " for a total of $" + totalCost + "."
-        const isOK:boolean = window.confirm(msg)
+        const msg: string =
+          "Please confirm purchase of " +
+          sharesToBuy +
+          " shares of " +
+          asset.name +
+          " for a total of $" +
+          totalCost +
+          ".";
+        const isOK: boolean = window.confirm(msg);
         if (isOK) {
-         buyAsset(asset, sharesToBuy);
-         window.alert("Purchase confirmed")
-        }
-        else 
-          alert("Purchase cancelled");
+          buyAsset(asset, sharesToBuy);
+          window.alert("Purchase confirmed");
+        } else alert("Purchase cancelled");
       }
     }
   };

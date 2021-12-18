@@ -17,8 +17,8 @@ function Positions() {
 
   const getData = (): object[] => {
     const data: object[] = [];
-    if (user?.assets) {
-      for (var asset of user?.assets) {
+    if (user && user.assets) {
+      for (var asset of user.assets) {
         data.push({
           name: asset.name,
           symbol: asset.symbol,

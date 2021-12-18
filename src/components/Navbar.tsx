@@ -7,7 +7,7 @@ enum ClickType {
   login = "/login",
   overview = "/overview",
   positions = "/positions",
-  activity = "/activity",
+  transactions = "/transactions",
   analysis = "/analysis",
   trade = "/trade"
 }
@@ -62,10 +62,10 @@ export default function Navbar() {
 
       <button
         onClick={() => {
-          handleOnClick(ClickType.activity);
+          handleOnClick(ClickType.transactions);
         }}
 
-        style = {clickType===ClickType.activity ? {color:"blue", fontWeight:"bold", background:"white"}: {color:undefined, fontWeight:undefined, background:undefined}}
+        style = {clickType===ClickType.transactions ? {color:"blue", fontWeight:"bold", background:"white"}: {color:undefined, fontWeight:undefined, background:undefined}}
 >
         {" "}
         Activity{" "}
