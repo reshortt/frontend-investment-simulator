@@ -121,7 +121,7 @@ export default function Buy() {
         if (isOK) {
           const response = await buyAsset(typedSymbol, sharesToBuy);
           if (response) {
-            window.alert("Purchase confirmed");
+            window.alert("Purchase confirmed: " + response);
           } else {
             window.alert("Purchase failed");
           }

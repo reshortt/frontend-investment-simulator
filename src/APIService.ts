@@ -231,14 +231,9 @@ export const buyAsset = async (symbol: string, shares: number) => {
 
   switch (response.status) {
     case 200: {
-      const userResponseObj = await response.json();
-
+      const userResponseObj = await response.text();
       return userResponseObj;
     }
-    case 401:
-      // todo: better way to show error
-      console.log(await response.json());
-      return false;
 
     default:
       // 500 is possible for critical server erropr
