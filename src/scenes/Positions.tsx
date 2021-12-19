@@ -20,10 +20,10 @@ function Positions() {
     if (user && user.assets) {
       for (var asset of user.assets) {
         data.push({
-          name: asset.name,
-          symbol: asset.symbol,
+          name: asset.stock.name,
+          symbol: asset.stock.symbol,
           lastPrice: formatCurrency(
-            asset.price.bid || asset.price.previousClose
+            asset.stock.price.bid || asset.stock.price.previousClose
           ),
           quantity: getQuantity(asset),
           costBasis: formatCurrency(getCostBasis(asset)),
@@ -80,4 +80,3 @@ function Positions() {
 }
 
 export default Positions
-

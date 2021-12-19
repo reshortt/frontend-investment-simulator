@@ -180,7 +180,7 @@ export const getCash = async (): Promise<number> => {
 //TODO: don't lookup empty or null string
 export const lookupTicker = async (
   tickerSymbol: string
-): Promise<Asset | null> => {
+): Promise<string | null> => {
   console.log("Looking up ticker: " + tickerSymbol + ".......");
 
   // TODO: credentials not needed for stocklookup. ...remove
@@ -198,7 +198,7 @@ export const lookupTicker = async (
 
   switch (response.status) {
     case 200:
-      const userResponseObj = await response.json();
+      const userResponseObj: string = await response.text();
       return userResponseObj;
 
     case 400:
@@ -213,11 +213,10 @@ export const lookupTicker = async (
   }
 };
 
-export const buyAsset = async (asset: Asset, shares: number) => {
+export const buyAsset = async (symbol: string, shares: number) => {
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
-  const symbol: string = asset.symbol;
   const sharesString: string = shares.toString();
   const buySharesURL = new URL("http://localhost:3005/API/buyAsset");
   const buySharesQueryParams = new URLSearchParams({
@@ -226,28 +225,25 @@ export const buyAsset = async (asset: Asset, shares: number) => {
   });
   buySharesURL.search = buySharesQueryParams.toString();
 
-  console.log("buying ", shares, " of ", asset.name);
-
   const response = await fetch(buySharesURL, requestOptions);
 
-  const userResponseObj = await response.json();
   console.log("response: ", response.status);
 
   switch (response.status) {
-    case 200:
-      //const userResponseObj = await response.json();
+    case 200: {
+      const userResponseObj = await response.json();
 
       return userResponseObj;
-
+    }
     case 401:
       // todo: better way to show error
       console.log(await response.json());
-      return userResponseObj;
+      return false;
 
     default:
       // 500 is possible for critical server erropr
       console.log("unexpected getAssets response");
-      return userResponseObj;
+      return false;
   }
 };
 
@@ -290,7 +286,7 @@ export const getStockPrice = async (
 
 export const getShareCount = ((asset:Asset|null|undefined):number => {
 
-  console.log("get Share count for ", asset?.symbol, " with ", asset?.lots)
+  console.log("get Share count for ", asset?.stock?.symbol, " with ", asset?.lots)
 
   var totalCount:number = 0
   if (!asset)

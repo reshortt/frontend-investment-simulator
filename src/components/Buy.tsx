@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState, useRef } from "react";
 import { buyAsset, getCash, getStockPrice, lookupTicker } from "../APIService";
-import { Asset, COMMISSION, StockPrices } from "../types";
+import { COMMISSION, StockPrices } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
   "Please enter a valid stock ticker symbol";
@@ -16,7 +16,7 @@ export default function Buy() {
   });
   const [totalCost, setTotalCost] = useState<number>(0);
   const [shareCost, setShareCost] = useState<number>(0);
-  const [asset, setAsset] = useState<Asset | null>();
+  const [companyName, setCompanyName] = useState<string | null>(null);
   const [cash, setCash] = useState<number>(0);
   //const [loading, setLoading] = useState<boolean>(false);
 
@@ -44,17 +44,17 @@ export default function Buy() {
     setLoadingStock(true);
     currentTypedSymbol.current = typedSymbol;
     lookupTicker(typedSymbol)
-      .then((foundAsset) => {
+      .then((foundCompanyName: string | null) => {
         if (typedSymbol === currentTypedSymbol.current) {
           setLoadingStock(false);
-          setAsset(foundAsset);
-          if (foundAsset) {
+          setCompanyName(foundCompanyName);
+          if (foundCompanyName) {
             //console.log("3. loading -> ", true);
             //setLoading(loading + 1);
             //isLoading.current = true;
             //setLoading(true);
             setLoadingPrice(true);
-            getStockPrice(foundAsset.symbol)
+            getStockPrice(typedSymbol)
               .then((foundPrice) => {
                 console.log("4. loading -> ", false);
                 //setLoading(false);
@@ -79,7 +79,7 @@ export default function Buy() {
   }, [typedSymbol]);
 
   useEffect(() => {
-    if (asset != null && price != null) {
+    if (companyName != null && price != null) {
       const shareOnlyCost: number = sharesToBuy * price.ask;
       setShareCost(shareOnlyCost);
       setTotalCost(
@@ -90,37 +90,41 @@ export default function Buy() {
       setShareCost(0);
       setTotalCost(0);
     }
-  }, [asset, price, sharesToBuy]);
+  }, [companyName, price, sharesToBuy]);
 
   const getForegroundColor = (): string => {
-    return !asset ? "red" : "black";
+    return !companyName ? "red" : "black";
   };
 
   const getCompanyText = (): string => {
-    const text: string = !asset ? PLEASE_ENTER_VALID_STOCK : asset.name;
+    const text: string = !companyName ? PLEASE_ENTER_VALID_STOCK : companyName;
     //console.log("returning company text = ", {text});
     return text;
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (cash < totalCost) {
       // TODO: throw dialog box
       console.log("You don't have enough cash for  that purchase ");
       window.alert("You don't have enough cash for  that purchase ");
     } else {
-      if (asset) {
+      if (companyName) {
         const msg: string =
           "Please confirm purchase of " +
           sharesToBuy +
           " shares of " +
-          asset.name +
+          companyName +
           " for a total of $" +
           totalCost +
           ".";
         const isOK: boolean = window.confirm(msg);
         if (isOK) {
-          buyAsset(asset, sharesToBuy);
-          window.alert("Purchase confirmed");
+          const response = await buyAsset(typedSymbol, sharesToBuy);
+          if (response) {
+            window.alert("Purchase confirmed");
+          } else {
+            window.alert("Purchase failed");
+          }
         } else alert("Purchase cancelled");
       }
     }
@@ -142,7 +146,7 @@ export default function Buy() {
       <label> Stock </label>
       <input type="text" onChange={handleTickerSymbol} />
       <label
-        style={{ color: asset == null && !loadingStock ? "red" : undefined }}
+        style={{ color: companyName === null && !loadingStock ? "red" : undefined }}
       >
         {" "}
         {loadingStock ? "..." : getCompanyText()}{" "}
