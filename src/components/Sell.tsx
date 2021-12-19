@@ -20,16 +20,16 @@ export default function Sell() {
 
   const handleAssetChange = (val: ChangeEvent<HTMLSelectElement>) => {
     const thisAsset = assets?.find(
-      (currAsset) => currAsset.symbol === val.target.value
+      (currAsset) => currAsset.stock.symbol === val.target.value
     );
     console.log(
       "Asset changed to ",
-      thisAsset?.name,
+      thisAsset?.stock.name,
       " and ",
-      thisAsset?.symbol
+      thisAsset?.stock.symbol
     );
     setAsset(thisAsset)
- 
+
   };
 
   const handleSharesToSell = (e: ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +47,7 @@ export default function Sell() {
   useEffect(() => {
     if (asset) {
       setLoadingPrice(true)
-      getStockPrice(asset.symbol).then((foundPrice) => {
+      getStockPrice(asset.stock.symbol).then((foundPrice) => {
         console.log("Setting price to ", foundPrice);
         setPrice(foundPrice);
         setLoadingPrice(false);
@@ -73,11 +73,11 @@ export default function Sell() {
       <label> Stock </label>
       <select name="asset" onChange={handleAssetChange}>
         {assets?.map((currAsset) => {
-          return <option> {currAsset.symbol} </option>;
+          return <option> {currAsset.stock.symbol} </option>;
         })}
       </select>
 
-      <label> {asset?.name} </label>
+      <label> {asset?.stock.name} </label>
       <label> {"(" + getShareCount(asset) + " shares available to sell)"}   </label>
       <br />
 

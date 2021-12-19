@@ -20,7 +20,7 @@ export const getQuantity = (asset: Asset): number => {
 };
 
 export const getAssetValue = (asset: Asset): number => {
-  return getQuantity(asset) * (asset.price.bid || asset.price.previousClose);
+  return getQuantity(asset) * (asset.stock.price.bid || asset.stock.price.previousClose || 0);
 };
 
 export const getGain = (user: User): number => {
@@ -38,7 +38,7 @@ export const getAccountValue = (user: User): number => {
 export const getPercentOfAccount = (user: User, asset: Asset): number => {
   console.log(
     "percent of ",
-    asset.name,
+    asset.stock.name,
     ": ",
     getAssetValue(asset) / getAccountValue(user)
   );
