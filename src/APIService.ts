@@ -213,15 +213,17 @@ export const lookupTicker = async (
   }
 };
 
-export const buyAsset = async (symbol: string, shares: number) => {
+export const buyAsset = async (symbol: string, shares: number, price:number) => {
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
   const sharesString: string = shares.toString();
+  const priceString: string = price.toString();
   const buySharesURL = new URL("http://localhost:3005/API/buyAsset");
   const buySharesQueryParams = new URLSearchParams({
     tickerSymbol: symbol,
     shares: sharesString,
+    price:priceString
   });
   buySharesURL.search = buySharesQueryParams.toString();
 

@@ -8,12 +8,7 @@ const PLEASE_ENTER_VALID_STOCK: string =
 export default function Buy() {
   const [typedSymbol, setTypedSymbol] = useState("");
   const [sharesToBuy, setSharesToBuy] = useState<number>(0);
-  const [price, setPrice] = useState<StockPrices | null>({
-    bid: 0,
-    ask: 0,
-    previousClose: 0,
-    historicalPrices: [],
-  });
+  const [askPrice, setAskPrice] = useState<number | null>(0);
   const [totalCost, setTotalCost] = useState<number>(0);
   const [shareCost, setShareCost] = useState<number>(0);
   const [companyName, setCompanyName] = useState<string | null>(null);
@@ -61,13 +56,13 @@ export default function Buy() {
                 //isLoading.current = false;
                 //console.log("Setting price to ", foundPrice);
                 setLoadingPrice(false);
-                setPrice(foundPrice);
+                setAskPrice(foundPrice.ask);
               })
               .catch((ex: Error) => {
                 setLoadingPrice(false);
               });
           } else {
-            setPrice(null);
+            setAskPrice(null);
           }
           //isLoading.current = false
           setLoadingStock(false);
@@ -79,18 +74,17 @@ export default function Buy() {
   }, [typedSymbol]);
 
   useEffect(() => {
-    if (companyName != null && price != null) {
-      const shareOnlyCost: number = sharesToBuy * price.ask;
+    if (companyName != null && askPrice != null) {
+      const shareOnlyCost: number = sharesToBuy * askPrice;
       setShareCost(shareOnlyCost);
       setTotalCost(
         shareOnlyCost > 0 ? shareOnlyCost + COMMISSION : shareOnlyCost
       );
-      console.log("Historical prices: ", price.historicalPrices);
     } else {
       setShareCost(0);
       setTotalCost(0);
     }
-  }, [companyName, price, sharesToBuy]);
+  }, [companyName, askPrice, sharesToBuy]);
 
   const getForegroundColor = (): string => {
     return !companyName ? "red" : "black";
@@ -119,7 +113,7 @@ export default function Buy() {
           ".";
         const isOK: boolean = window.confirm(msg);
         if (isOK) {
-          const response = await buyAsset(typedSymbol, sharesToBuy);
+          const response = await buyAsset(typedSymbol, sharesToBuy, askPrice || 0);
           if (response) {
             window.alert("Purchase confirmed: " + response);
           } else {
@@ -155,7 +149,7 @@ export default function Buy() {
       <label>Current Ask Price </label>
       <label>
         {" "}
-        ${loadingStock || loadingPrice ? "..." : price ? price.ask : 0}
+        ${loadingStock || loadingPrice ? "..." : askPrice || "no price yet..."}
       </label>
       <br />
 
