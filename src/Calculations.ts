@@ -63,6 +63,12 @@ export const formatCurrency = (money: number): string => {
   );
 };
 
+export const formateDate = (date: Date) : string => {
+  return new Intl.DateTimeFormat("en-us", {
+    dateStyle: 'full'
+  }).format(date)
+}
+
 export const formatPercent = (percent: number): string => {
   return (
     new Intl.NumberFormat("en-us", {

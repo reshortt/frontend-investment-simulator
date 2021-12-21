@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { getUser } from "../APIService";
-import { formatCurrency, getAccountValue, getGain } from "../Calculations";
-import { INITIAL_GIFT, User } from "../types";
-const jwt = require("jsonwebtoken");
+import {
+  formatCurrency,
+  formatDate,
+  getAccountValue,
+  getGain,
+} from "../Calculations";
+import { User } from "../types";
 
 function Overview() {
   const [user, setUser] = useState<User>();
@@ -16,13 +20,13 @@ function Overview() {
     });
   }, []);
 
-  const getBalanceString = (user: User|undefined): string => {
+  const getBalanceString = (user: User | undefined): string => {
     if (loadingUser) return "...";
     if (!user) return "";
     return formatCurrency(getAccountValue(user));
   };
 
-  const getGainString = (user: User|undefined): string => {
+  const getGainString = (user: User | undefined): string => {
     if (loadingUser) return "...";
     if (!user) return "";
     return formatCurrency(getGain(user));
@@ -30,19 +34,31 @@ function Overview() {
 
   return (
     <div className="Overview">
-      {
-        <label>
-          Balance
-          {":  "}
-          {getBalanceString(user)}
-        </label>
-      }
+      <label>
+        Name:
+        {"  "}
+      </label>
+      <label>{user && !loadingUser && user.name}</label>
+      <br />
+      <label>Account Created:</label>
+      <label>
+        {"  "}
+        {user && !loadingUser && formatDate(user.created)}
+      </label>
+      <br />
+      <label>
+        Balance:
+        {"  "}
+        {getBalanceString(user)}
+      </label>
       <br />
 
       <label> Total Gain/Loss: </label>
       <label
         style={
-          (user && !loadingUser && getGain(user) < 0) ? { color: "red" } : { color: undefined }
+          user && !loadingUser && getGain(user) < 0
+            ? { color: "red" }
+            : { color: undefined }
         }
       >
         {"  "}
