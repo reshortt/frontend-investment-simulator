@@ -19,12 +19,14 @@ function Positions() {
     const data: object[] = [];
     if (user && user.assets) {
       for (var asset of user.assets) {
+        console.log("pushing asset = ", JSON.stringify(asset))
         data.push({
           name: asset.stock.name,
           symbol: asset.stock.symbol,
-          lastPrice: formatCurrency(
-            asset.stock.price.bid || asset.stock.price.previousClose
-          ),
+          // lastPrice: formatCurrency(
+          //   asset.stock.price.bid || asset.stock.price.previousClose
+          // ),
+          lastPrice: (asset.stock.price.bid || asset.stock.price.previousClose),
           quantity: getQuantity(asset),
           costBasis: formatCurrency(getCostBasis(asset)),
           currentValue: formatCurrency(getAssetValue(asset)),

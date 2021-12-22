@@ -13,7 +13,6 @@ export type StockPrices = {
   bid: number;
   ask: number;
   previousClose: number;
-  historicalPrices: HistoricalPrice[];
 };
 export type HistoricalPrice = { date: Date; price: number };
 export type User = {
@@ -32,7 +31,6 @@ export type Transaction = {
   symbol: string;
   shares: number;
   name:string;
-  cash:number
 };
 
 export enum TransactionType {

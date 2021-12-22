@@ -124,17 +124,6 @@ export default function Buy() {
     }
   };
 
-  console.log(
-    "isLoadingPrice is ========>>> ",
-    loadingPrice,
-    " before rendering"
-  );
-  console.log(
-    "isLoadingStock is ========>>> ",
-    loadingStock,
-    " before rendering"
-  );
-
   return (
     <div>
       <label> Stock </label>
@@ -149,7 +138,7 @@ export default function Buy() {
       <label>Current Ask Price </label>
       <label>
         {" "}
-        ${loadingStock || loadingPrice ? "..." : askPrice || "no price yet..."}
+        ${loadingStock || loadingPrice ? "..." : (askPrice || 0)}
       </label>
       <br />
 

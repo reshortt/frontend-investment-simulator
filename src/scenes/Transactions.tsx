@@ -58,30 +58,23 @@ function Transactions() {
   const [user, setUser] = useState<User | null>();
 
   const getData = (): object[] => {
-    const data: object[] = [];
+    const tableModel : object[] = [];
     if (user && user.transactions) {
+      console.log('User.transactions.length = ', user.transactions.length)
       for (var transaction of user.transactions) {
-        if (!transaction) {
-          console.log("===================>>> null transaction!!!");
-        } else {
-          console.log(
-            "table row = ",
-            transaction.date,
-            formatDate(transaction.date)
-          );
-          data.push({
+          tableModel.push({
             date: formatDate(transaction.date),
             description: createDescription(transaction),
             amount: formatCurrency(transaction.amount),
-            cash: formatCurrency(transaction.cash),
+
+            // TODO: Calculate cash cuz we're not storing it anymore
+            cash: formatCurrency(0)
           });
-        }
       }
     }
 
 
-    console.log("Transactions are :" + JSON.stringify(data))
-    return data;
+    return tableModel;
   };
 
   const getColumns = (): object[] => {

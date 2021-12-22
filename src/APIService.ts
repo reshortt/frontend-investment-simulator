@@ -266,7 +266,6 @@ export const getStockPrice = async (
   switch (response.status) {
     case 200:
       //const userResponseObj = await response.json();
-
       return userResponseObj;
 
     case 401:

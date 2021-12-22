@@ -11,7 +11,6 @@ export default function Sell() {
     bid: 0,
     ask: 0,
     previousClose: 0,
-    historicalPrices: []
   });
 
   // TODO: assetName prolly  not used - delete it
