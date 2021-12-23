@@ -32,7 +32,7 @@ export const getAccountValue = (user: User): number => {
   for (var asset of user.assets) {
     total += getAssetValue(asset);
   }
-  return total + user.cash;
+  return total + user.info.cash;
 };
 
 export const getPercentOfAccount = (user: User, asset: Asset): number => {
@@ -50,7 +50,7 @@ export const getGainLoss = (asset: Asset): number => {
 };
 
 export const getCash = (user: User): number => {
-  return user.cash;
+  return user.info.cash;
 };
 
 export const formatCurrency = (money: number): string => {

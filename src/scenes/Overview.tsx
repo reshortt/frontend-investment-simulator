@@ -1,33 +1,40 @@
 import { useEffect, useState } from "react";
-import { getUser } from "../APIService";
+import { getUser, getUserInfo } from "../APIService";
 import {
   formatCurrency,
   formatDate,
   getAccountValue,
   getGain,
 } from "../Calculations";
-import { User } from "../types";
+import { User, UserInfo } from "../types";
 
 function Overview() {
   const [user, setUser] = useState<User>();
+  const [userInfo, setUserInfo] = useState<UserInfo>();
   const [loadingUser, setLoadingUser] = useState<boolean>(false);
+  const [loadingUserInfo, setLoadingUserInfo] = useState<boolean>(false);
 
   useEffect(() => {
-    setLoadingUser(true);
-    getUser().then((foundUser) => {
-      foundUser && setUser(foundUser);
-      setLoadingUser(false);
+    setLoadingUserInfo(true);
+    getUserInfo().then((foundUserInfo) => {
+      foundUserInfo && setUserInfo(foundUserInfo);
+      setLoadingUserInfo(false);
+      setLoadingUser(true);
+      getUser().then((foundUser) => {
+        foundUser && setUser(foundUser);
+        setLoadingUser(false);
+      });
     });
   }, []);
 
-  const getBalanceString = (user: User | undefined): string => {
-    if (loadingUser) return "...";
+  const getAccountValueString = (user: User | undefined): string => {
+    if (loadingUser || loadingUserInfo) return "...";
     if (!user) return "";
     return formatCurrency(getAccountValue(user));
   };
 
   const getGainString = (user: User | undefined): string => {
-    if (loadingUser) return "...";
+    if (loadingUser|| loadingUserInfo) return "...";
     if (!user) return "";
     return formatCurrency(getGain(user));
   };
@@ -38,18 +45,26 @@ function Overview() {
         Name:
         {"  "}
       </label>
-      <label>{user && !loadingUser && user.name}</label>
+      <label>{userInfo && !loadingUserInfo && userInfo.name}</label>
       <br />
       <label>Account Created:</label>
       <label>
         {"  "}
-        {user && !loadingUser && formatDate(user.created)}
+        {userInfo && !loadingUserInfo && formatDate(userInfo.created)}
       </label>
       <br />
       <label>
-        Balance:
+        Cash Balance:
+      </label>
+      <label>
         {"  "}
-        {getBalanceString(user)}
+        {userInfo && !loadingUserInfo && formatCurrency(userInfo.cash)}
+      </label>
+      <br/>
+      <label>
+        Account Value:
+        {"  "}
+        {getAccountValueString(user)}
       </label>
       <br />
 

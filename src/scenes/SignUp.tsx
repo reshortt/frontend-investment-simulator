@@ -33,6 +33,9 @@ function SignUp() {
           "json response of successful add is " + JSON.stringify(json)
         );
       }
+      else {
+        window.alert ("Signup failed: " + response)
+      }
     };
     fetchData();
   };

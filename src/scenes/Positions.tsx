@@ -38,7 +38,7 @@ function Positions() {
     if (user) {
       data.push({
         name: "Cash",
-        currentValue: formatCurrency(user.cash),
+        currentValue: formatCurrency(user.info.cash),
       });
     }
     return data;
