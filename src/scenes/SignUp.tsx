@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 
 import fetch from "node-fetch";
-//type LoginPropType = {setLoggedIn:(val:boolean)=>void, isLoggedIn:boolean}
 
 function SignUp() {
   const [typedPassword, setTypedPassword] = useState("");
@@ -24,7 +23,7 @@ function SignUp() {
         requestOptions
       );
 
-      const status: number = await response.status;
+      const status: number = response.status;
       const json: string = await response.json();
 
       if (status === 200) {
@@ -32,9 +31,10 @@ function SignUp() {
         console.log(
           "json response of successful add is " + JSON.stringify(json)
         );
+        window.alert("Welcome, " + typedName + ". Your account was successfully created.")
       }
       else {
-        window.alert ("Signup failed: " + response)
+        window.alert ("Signup failed: " + JSON.stringify(json))
       }
     };
     fetchData();

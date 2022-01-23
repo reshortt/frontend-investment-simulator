@@ -34,8 +34,6 @@ export default function Buy() {
   }, []);
 
   useEffect(() => {
-    console.log("1. loading -> ", true);
-
     setLoadingStock(true);
     currentTypedSymbol.current = typedSymbol;
     lookupTicker(typedSymbol)
@@ -51,7 +49,6 @@ export default function Buy() {
             setLoadingPrice(true);
             getStockPrice(typedSymbol)
               .then((foundPrice) => {
-                console.log("4. loading -> ", false);
                 //setLoading(false);
                 //isLoading.current = false;
                 //console.log("Setting price to ", foundPrice);
@@ -98,29 +95,31 @@ export default function Buy() {
 
   const handlePurchase = async () => {
     if (cash < totalCost) {
-      // TODO: throw dialog box
-      console.log("You don't have enough cash for  that purchase ");
       window.alert("You don't have enough cash for  that purchase ");
-    } else {
-      if (companyName) {
-        const msg: string =
-          "Please confirm purchase of " +
-          sharesToBuy +
-          " shares of " +
-          companyName +
-          " for a total of $" +
-          totalCost +
-          ".";
-        const isOK: boolean = window.confirm(msg);
-        if (isOK) {
-          const response = await buyAsset(typedSymbol, sharesToBuy, askPrice || 0);
-          if (response) {
-            window.alert("Purchase confirmed: " + response);
-          } else {
-            window.alert("Purchase failed");
-          }
-        } else alert("Purchase cancelled");
-      }
+      return;
+    }
+    if (companyName) {
+      const msg: string =
+        "Please confirm purchase of " +
+        sharesToBuy +
+        " shares of " +
+        companyName +
+        " for a total of $" +
+        totalCost +
+        ".";
+      const isOK: boolean = window.confirm(msg);
+      if (isOK) {
+        const response = await buyAsset(
+          typedSymbol,
+          sharesToBuy,
+          askPrice || 0
+        );
+        if (response) {
+          window.alert("Purchase confirmed: " + response);
+        } else {
+          window.alert("Purchase failed");
+        }
+      } else alert("Purchase cancelled");
     }
   };
 
@@ -129,17 +128,16 @@ export default function Buy() {
       <label> Stock </label>
       <input type="text" onChange={handleTickerSymbol} />
       <label
-        style={{ color: companyName === null && !loadingStock ? "red" : undefined }}
+        style={{
+          color: companyName === null && !loadingStock ? "red" : undefined,
+        }}
       >
         {" "}
         {loadingStock ? "..." : getCompanyText()}{" "}
       </label>
       <br />
       <label>Current Ask Price </label>
-      <label>
-        {" "}
-        ${loadingStock || loadingPrice ? "..." : (askPrice || 0)}
-      </label>
+      <label> ${loadingStock || loadingPrice ? "..." : askPrice || 0}</label>
       <br />
 
       <label>Shares to buy </label>

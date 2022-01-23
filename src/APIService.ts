@@ -14,6 +14,12 @@ const createRequestAuthorization = (methodType = "GET"): RequestInit => {
 export const isLoggedIn = (): boolean =>
   !!sessionStorage.getItem(AUTH_TOKEN_KEY);
 
+
+export const doLogout = () => {
+  sessionStorage.removeItem(AUTH_TOKEN_KEY)
+  window.location.assign("/login")
+}
+
 export const doLogin = async (
   email: string,
   password: string
@@ -253,6 +259,37 @@ export const buyAsset = async (symbol: string, shares: number, price:number) => 
   buySharesURL.search = buySharesQueryParams.toString();
 
   const response = await fetch(buySharesURL, requestOptions);
+
+  console.log("response: ", response.status);
+
+  switch (response.status) {
+    case 200: {
+      const userResponseObj = await response.text();
+      return userResponseObj;
+    }
+
+    default:
+      // 500 is possible for critical server erropr
+      console.log("unexpected getAssets response");
+      return false;
+  }
+};
+
+export const sellAsset = async (symbol: string, shares: number, price:number) => {
+  // TODO: credentials not needed for stocklookup.remove
+  const requestOptions = createRequestAuthorization();
+
+  const sharesString: string = shares.toString();
+  const priceString: string = price.toString();
+  const sellAssetURL = new URL("http://localhost:3005/API/sellAsset");
+  const sellAssetQueryParams = new URLSearchParams({
+    tickerSymbol: symbol,
+    shares: sharesString,
+    price:priceString
+  });
+  sellAssetURL.search = sellAssetQueryParams.toString();
+
+  const response = await fetch(sellAssetURL, requestOptions);
 
   console.log("response: ", response.status);
 

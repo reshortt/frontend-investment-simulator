@@ -1,6 +1,4 @@
-import { useState } from "react"
 import styled from "styled-components/macro"
-import Navbar from "./Navbar"
 
 
 export default function Header () {
@@ -12,6 +10,5 @@ export default function Header () {
 
 
     return <Container>
-
         </Container>
 }

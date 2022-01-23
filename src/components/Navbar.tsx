@@ -1,7 +1,8 @@
 import styled from "styled-components/macro";
 
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { CSSProperties, useState } from "react";
+import { doLogout } from "../APIService";
 
 enum ClickType {
   login = "/login",
@@ -18,6 +19,13 @@ export default function Navbar() {
   const handleOnClick = (page:ClickType) => {
     setClickType(page)
     history.push(page);
+  }
+  
+  const handleLogout = () => {
+
+    const isOK: boolean = window.confirm("OK to Log Out?");
+    if (!isOK) return
+     doLogout()
   }
 
   const Container = styled.div`
@@ -68,7 +76,7 @@ export default function Navbar() {
         style = {clickType===ClickType.transactions ? {color:"blue", fontWeight:"bold", background:"white"}: {color:undefined, fontWeight:undefined, background:undefined}}
 >
         {" "}
-        Activity{" "}
+        Transactions{" "}
       </button>
 
 
@@ -94,6 +102,15 @@ export default function Navbar() {
       >
         {" "}
         Trade{" "}
+      </button>
+
+
+      <button
+        onClick={() => {
+          handleLogout()
+        }}
+      >
+      Log Out  
       </button>
     </Container>
   );

@@ -67,8 +67,7 @@ function Transactions() {
             description: createDescription(transaction),
             amount: formatCurrency(transaction.amount),
 
-            // TODO: Calculate cash cuz we're not storing it anymore
-            cash: formatCurrency(0)
+            cash: formatCurrency(transaction.cash)
           });
       }
     }

@@ -1,20 +1,18 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import Autocomplete from "react-autocomplete";
-import { getAssets, getShareCount, getStockPrice } from "../APIService";
+import { buyAsset, getAssets, getShareCount, getStockPrice, sellAsset } from "../APIService";
 import { Asset, COMMISSION, StockPrices } from "../types";
 
 export default function Sell() {
   const [assets, setAssets] = useState<Asset[]>();
-  const [asset, setAsset] = useState<Asset|null>();
-  const [sharesToCell, setSharesToCell] = useState(0);
+  const [asset, setAsset] = useState<Asset | null>();
+  const [sharesToSell, setSharesToSell] = useState(0);
   const [price, setPrice] = useState<StockPrices>({
     bid: 0,
     ask: 0,
     previousClose: 0,
   });
 
-  // TODO: assetName prolly  not used - delete it
-  const [assetName, setAssetName] = useState<string>("");
   const [loadingPrice, setLoadingPrice] = useState<boolean>(false);
 
   const handleAssetChange = (val: ChangeEvent<HTMLSelectElement>) => {
@@ -27,25 +25,61 @@ export default function Sell() {
       " and ",
       thisAsset?.stock.symbol
     );
-    setAsset(thisAsset)
-
+    setAsset(thisAsset);
   };
 
   const handleSharesToSell = (e: ChangeEvent<HTMLInputElement>) => {
-    setSharesToCell(e.target.valueAsNumber);
+    setSharesToSell(e.target.valueAsNumber);
   };
 
+  const handleSale = async () => {
+    if (sharesToSell >  getShareCount(asset)) {
+      window.alert("Insufficient shares for this sale")
+      return
+    }
+
+    if (asset) {
+
+      const totalCost:number = price.ask * sharesToSell - COMMISSION;
+      const msg: string =
+        "Please confirm sale of " +
+        sharesToSell +
+        " shares of " +
+        asset.stock.name +
+        " for a total of $" +
+        totalCost +
+        ".";
+      const isOK: boolean = window.confirm(msg);
+      if (!isOK) {
+        
+      }
+
+      if (isOK) {
+        const response = await sellAsset(
+          asset.stock.name,
+          sharesToSell,
+          price.ask || 0
+        );
+        if (response) {
+          window.alert("Sale confirmed: " + response);
+        } else {
+          window.alert("Sale failed: " + response);
+        }
+      } else alert("Purchase cancelled");
+    }
+
+  }
+
   useEffect(() => {
-    getAssets().then( (foundAssets) => {
-      setAssets(foundAssets)
-      if (foundAssets && foundAssets.length > 0)
-        setAsset(foundAssets[0])
+    getAssets().then((foundAssets) => {
+      setAssets(foundAssets);
+      if (foundAssets && foundAssets.length > 0) setAsset(foundAssets[0]);
     });
   }, []);
 
   useEffect(() => {
     if (asset) {
-      setLoadingPrice(true)
+      setLoadingPrice(true);
       getStockPrice(asset.stock.symbol).then((foundPrice) => {
         console.log("Setting price to ", foundPrice);
         setPrice(foundPrice);
@@ -77,10 +111,13 @@ export default function Sell() {
       </select>
 
       <label> {asset?.stock.name} </label>
-      <label> {"(" + getShareCount(asset) + " shares available to sell)"}   </label>
+      <label>
+        {" "}
+        {"(" + getShareCount(asset) + " shares available to sell)"}{" "}
+      </label>
       <br />
 
-      <label> Test Stock  </label>
+      {/* <label> Test Stock  </label>
 
       <Autocomplete
         getItemValue={(item) => item.label}
@@ -94,7 +131,7 @@ export default function Sell() {
         onChange={(e) => setAssetName(e.target.value)}
         onSelect={(val) => setAssetName(val)}
       />
-      <br />
+      <br /> */}
 
       <label>Current Bid Price </label>
       <label> ${loadingPrice ? "..." : price.bid}</label>
@@ -105,20 +142,25 @@ export default function Sell() {
       <br />
 
       <label>Commission</label>
-      <label> {" "}
-        ${loadingPrice
-          ? "..."
-          : sharesToCell > 0
-          ? COMMISSION
-          : 0}{" "}
+      <label>
+        {" "}
+        ${loadingPrice ? "..." : sharesToSell > 0 ? COMMISSION : 0}{" "}
       </label>
       <br />
 
       <label>Total Proceeds </label>
-      <label> ${loadingPrice ? "..." : sharesToCell > 0?  (price.ask * sharesToCell - COMMISSION) : 0} </label>
+      <label>
+        {" "}
+        $
+        {loadingPrice
+          ? "..."
+          : sharesToSell > 0
+          ? price.ask * sharesToSell - COMMISSION
+          : 0}{" "}
+      </label>
       <br />
 
-      <button>Confirm Sale</button>
+      <button onClick={handleSale}>Sell</button>
     </div>
   );
 }
