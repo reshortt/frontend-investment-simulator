@@ -264,7 +264,7 @@ export const buyAsset = async (symbol: string, shares: number, price:number) => 
 
   switch (response.status) {
     case 200: {
-      const userResponseObj = await response.text();
+      const userResponseObj = await response.json();
       return userResponseObj;
     }
 

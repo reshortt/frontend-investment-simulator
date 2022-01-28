@@ -40,7 +40,7 @@ export default function Sell() {
 
     if (asset) {
 
-      const totalCost:number = price.ask * sharesToSell - COMMISSION;
+      const totalCost:number = price.bid * sharesToSell - COMMISSION;
       const msg: string =
         "Please confirm sale of " +
         sharesToSell +
@@ -56,7 +56,7 @@ export default function Sell() {
 
       if (isOK) {
         const response = await sellAsset(
-          asset.stock.name,
+          asset.stock.symbol,
           sharesToSell,
           price.ask || 0
         );
@@ -65,7 +65,7 @@ export default function Sell() {
         } else {
           window.alert("Sale failed: " + response);
         }
-      } else alert("Purchase cancelled");
+      } else alert("Sale cancelled");
     }
 
   }

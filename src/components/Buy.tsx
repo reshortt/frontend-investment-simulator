@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useState, useRef } from "react";
 import { buyAsset, getCash, getStockPrice, lookupTicker } from "../APIService";
+import { formatCurrency } from "../Calculations";
 import { COMMISSION, StockPrices } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
@@ -115,7 +116,9 @@ export default function Buy() {
           askPrice || 0
         );
         if (response) {
-          window.alert("Purchase confirmed: " + response);
+          window.alert("Purchase confirmed. New cash is " + formatCurrency(response.cash))
+          window.location.assign("/positions")
+
         } else {
           window.alert("Purchase failed");
         }
