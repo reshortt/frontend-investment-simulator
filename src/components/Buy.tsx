@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState, useRef } from "react";
-import { buyAsset, getCash, getStockPrice, lookupTicker } from "../APIService";
+import { buyAsset, BuyAssetResponse, getCash, getStockPrice, lookupTicker } from "../APIService";
 import { COMMISSION, StockPrices } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
@@ -109,17 +109,21 @@ export default function Buy() {
         ".";
       const isOK: boolean = window.confirm(msg);
       if (isOK) {
-        const response = await buyAsset(
+        buyAsset(
           typedSymbol,
           sharesToBuy,
           askPrice || 0
-        );
-        if (response) {
-          window.alert("Purchase confirmed: " + response);
-        } else {
-          window.alert("Purchase failed");
+        ).then((buyAssetResponse: BuyAssetResponse)=>{
+            const { successful, remainingCash } = buyAssetResponse
+            if(successful){
+                window.alert(`Purchase executed! You have ${remainingCash} remaining.`);
+            }
+        }, ()=>{
+            window.alert("Purchase was not executed due to critical server error");
+        });
         }
-      } else alert("Purchase cancelled");
+      } else{
+        window.alert("Purchase cancelled");
     }
   };
 
