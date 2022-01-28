@@ -244,7 +244,12 @@ export const lookupTicker = async (
   }
 };
 
-export const buyAsset = async (symbol: string, shares: number, price:number) => {
+export type BuyAssetResponse = {
+  successful:boolean;
+  remainingCash?:number;
+}
+
+export const buyAsset = async (symbol: string, shares: number, price:number): Promise<BuyAssetResponse> => {
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
@@ -265,13 +270,14 @@ export const buyAsset = async (symbol: string, shares: number, price:number) => 
   switch (response.status) {
     case 200: {
       const userResponseObj = await response.json();
-      return userResponseObj;
+      const cashRemainingAfterPurchase: number = userResponseObj.cash;
+      return {successful: true, remainingCash: cashRemainingAfterPurchase};
     }
 
     default:
       // 500 is possible for critical server erropr
-      console.log("unexpected getAssets response");
-      return false;
+      console.log("unexpected buyAsset response");
+      return { successful: false };
   }
 };
 
