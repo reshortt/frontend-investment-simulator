@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useState, useRef } from "react";
 import { buyAsset, BuyAssetResponse, getCash, getStockPrice, lookupTicker } from "../APIService";
+import { formatCurrency } from "../Calculations";
 import { COMMISSION, StockPrices } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
