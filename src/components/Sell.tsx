@@ -1,6 +1,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import Autocomplete from "react-autocomplete";
 import { buyAsset, getAssets, getShareCount, getStockPrice, sellAsset } from "../APIService";
+import { formatCurrency } from "../Calculations";
 import { Asset, COMMISSION, StockPrices } from "../types";
 
 export default function Sell() {
@@ -61,7 +62,7 @@ export default function Sell() {
           price.ask || 0
         );
         if (response) {
-          window.alert("Sale confirmed: " + response);
+          window.alert("Sale confirmed. Cash remaining is " +  formatCurrency(response.remainingCash));
         } else {
           window.alert("Sale failed: " + response);
         }

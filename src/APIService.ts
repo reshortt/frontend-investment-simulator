@@ -281,6 +281,11 @@ export const buyAsset = async (symbol: string, shares: number, price:number): Pr
   }
 };
 
+export type SellAssetResponse = {
+  successful:boolean;
+  remainingCash?:number;
+}
+
 export const sellAsset = async (symbol: string, shares: number, price:number) => {
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
@@ -301,8 +306,9 @@ export const sellAsset = async (symbol: string, shares: number, price:number) =>
 
   switch (response.status) {
     case 200: {
-      const userResponseObj = await response.text();
-      return userResponseObj;
+      const userResponseObj = await response.json();
+      const cashRemainingAfterPurchase: number = userResponseObj.cash;
+      return {successful: true, remainingCash: cashRemainingAfterPurchase};
     }
 
     default:
