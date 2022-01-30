@@ -51,9 +51,6 @@ export default function Sell() {
         totalCost +
         ".";
       const isOK: boolean = window.confirm(msg);
-      if (!isOK) {
-        
-      }
 
       if (isOK) {
         const response = await sellAsset(
@@ -62,7 +59,8 @@ export default function Sell() {
           price.ask || 0
         );
         if (response) {
-          window.alert("Sale confirmed. Cash remaining is " +  formatCurrency(response.remainingCash));
+          window.alert("Sale confirmed. New cash balance is " +  formatCurrency(response.remainingCash));
+          window.location.assign("/positions");
         } else {
           window.alert("Sale failed: " + response);
         }

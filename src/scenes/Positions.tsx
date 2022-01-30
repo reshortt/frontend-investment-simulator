@@ -26,7 +26,8 @@ function Positions() {
           // lastPrice: formatCurrency(
           //   asset.stock.price.bid || asset.stock.price.previousClose
           // ),
-          lastPrice: (asset.stock.price.bid || asset.stock.price.previousClose),
+          bid: formatCurrency((asset.stock.price.bid || asset.stock.price.previousClose)),
+          ask: formatCurrency((asset.stock.price.ask || asset.stock.price.previousClose)),
           quantity: getQuantity(asset),
           costBasis: formatCurrency(getCostBasis(asset)),
           currentValue: formatCurrency(getAssetValue(asset)),
@@ -49,7 +50,8 @@ function Positions() {
       { title: "Symbol", dataIndex: "symbol", key: "symbol" },
       { title: "Asset", dataIndex: "name", key: "name" },
       { title: "Quantity", dataIndex: "quantity", key: "quantity" },
-      { title: "Latest Price", dataIndex: "lastPrice", key: "lastPrice" },
+      { title: "Bid", dataIndex: "bid", key: "bid" },
+      { title: "Ask", dataIndex: "ask", key: "ask" },
       {
         title: "Current Value",
         dataIndex: "currentValue",

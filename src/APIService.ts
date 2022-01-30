@@ -246,7 +246,7 @@ export const lookupTicker = async (
 
 export type BuyAssetResponse = {
   successful:boolean;
-  remainingCash?:number;
+  remainingCash:number;
 }
 
 export const buyAsset = async (symbol: string, shares: number, price:number): Promise<BuyAssetResponse> => {
@@ -277,7 +277,7 @@ export const buyAsset = async (symbol: string, shares: number, price:number): Pr
     default:
       // 500 is possible for critical server erropr
       console.log("unexpected buyAsset response");
-      return { successful: false };
+      return { successful: false, remainingCash:0 };
   }
 };
 

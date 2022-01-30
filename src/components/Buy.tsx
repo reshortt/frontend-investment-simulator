@@ -117,7 +117,8 @@ export default function Buy() {
         ).then((buyAssetResponse: BuyAssetResponse)=>{
             const { successful, remainingCash } = buyAssetResponse
             if(successful){
-                window.alert(`Purchase executed! You have ${remainingCash} remaining.`);
+                window.alert("Sale successful. New cash balance is " + formatCurrency(buyAssetResponse.remainingCash));
+                window.location.assign("/positions");
             }
         }, ()=>{
             window.alert("Purchase was not executed due to critical server error");
