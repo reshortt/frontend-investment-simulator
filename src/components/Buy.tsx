@@ -1,7 +1,15 @@
 import { ChangeEvent, useEffect, useState, useRef } from "react";
-import { buyAsset, BuyAssetResponse, getCash, getStockPrice, lookupTicker } from "../APIService";
+import { getSystemErrorMap } from "util";
+import {
+  buyAsset,
+  BuyAssetResponse,
+  getCash,
+  getHistoricalPrices,
+  getStockPrice,
+  lookupTicker,
+} from "../APIService";
 import { formatCurrency } from "../Calculations";
-import { COMMISSION, StockPrices } from "../types";
+import { COMMISSION, HistoricalPrice, StockPrices } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
   "Please enter a valid stock ticker symbol";
@@ -94,6 +102,14 @@ export default function Buy() {
     return text;
   };
 
+  // debug function only
+  const showHistoricalPrices = async (tickerSymbol: string) => {
+    const prices: HistoricalPrice[] = await getHistoricalPrices(tickerSymbol);
+    console.log(
+      "Historical Prices for " + tickerSymbol + ":\n" + JSON.stringify(prices)
+    );
+  };
+
   const handlePurchase = async () => {
     if (cash < totalCost) {
       window.alert("You don't have enough cash for  that purchase ");
@@ -105,27 +121,33 @@ export default function Buy() {
         sharesToBuy +
         " shares of " +
         companyName +
-        " for a total of $" +
-        totalCost +
+        " for a total of " +
+        formatCurrency(totalCost) +
         ".";
       const isOK: boolean = window.confirm(msg);
       if (isOK) {
-        buyAsset(
-          typedSymbol,
-          sharesToBuy,
-          askPrice || 0
-        ).then((buyAssetResponse: BuyAssetResponse)=>{
-            const { successful, remainingCash } = buyAssetResponse
-            if(successful){
-                window.alert("Sale successful. New cash balance is " + formatCurrency(buyAssetResponse.remainingCash));
-                window.location.assign("/positions");
+        buyAsset(typedSymbol, sharesToBuy, askPrice || 0).then(
+          (buyAssetResponse: BuyAssetResponse) => {
+            const { successful, remainingCash } = buyAssetResponse;
+            if (successful) {
+              window.alert(
+                "Purchase successful. New cash balance is " +
+                  formatCurrency(remainingCash)
+              );
+              window.location.assign("/transactions");
+              // console.log("showing historical prices *****************************************************")
+              // showHistoricalPrices(typedSymbol);
             }
-        }, ()=>{
-            window.alert("Purchase was not executed due to critical server error");
-        });
-        }
-      } else{
-        window.alert("Purchase cancelled");
+          },
+          () => {
+            window.alert(
+              "Purchase was not executed due to critical server error"
+            );
+          }
+        );
+      }
+    } else {
+      window.alert("Purchase cancelled");
     }
   };
 
@@ -143,7 +165,7 @@ export default function Buy() {
       </label>
       <br />
       <label>Current Ask Price </label>
-      <label> ${loadingStock || loadingPrice ? "..." : askPrice || 0}</label>
+      <label> {loadingStock || loadingPrice ? "..." : (askPrice? formatCurrency(askPrice) : formatCurrency(0)) || 0}</label>
       <br />
 
       <label>Shares to buy </label>
@@ -151,22 +173,22 @@ export default function Buy() {
       <br />
 
       <label>Share cost </label>
-      <label> ${loadingStock || loadingPrice ? "..." : shareCost} </label>
+      <label> {loadingStock || loadingPrice ? "..." : formatCurrency(shareCost)} </label>
       <br />
 
       <label> Commission </label>
       <label>
         {" "}
-        ${loadingStock || loadingPrice
+        {loadingStock || loadingPrice
           ? "..."
           : shareCost > 0
-          ? COMMISSION
+          ? formatCurrency(COMMISSION)
           : 0}{" "}
       </label>
       <br />
 
       <label>Total Cost </label>
-      <label> ${loadingStock || loadingPrice ? "..." : totalCost} </label>
+      <label> {loadingStock || loadingPrice ? "..." : formatCurrency(totalCost)} </label>
       <br />
 
       <button onClick={handlePurchase}>Buy</button>

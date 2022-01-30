@@ -1,5 +1,5 @@
 import { AUTH_TOKEN_KEY } from "./constants";
-import { Asset, StockPrices, Transaction, User, UserInfo } from "./types";
+import { Asset, HistoricalPrice, StockPrices, Transaction, User, UserInfo } from "./types";
 import fetch, { RequestInit } from "node-fetch";
 
 const createRequestAuthorization = (methodType = "GET"): RequestInit => {
@@ -286,8 +286,29 @@ export type SellAssetResponse = {
   remainingCash?:number;
 }
 
+export const getHistoricalPrices = async (symbol:string):Promise<HistoricalPrice[]> => {
+  const requestOptions = createRequestAuthorization();
+  const url = new URL("http://localhost:3005/API/getHistoricalPrices");
+  const params = new URLSearchParams({
+    tickerSymbol: symbol
+  });
+  url.search = params.toString()
+  const response = await fetch (url, requestOptions)
+
+  switch (response.status) {
+    case 200: {
+      return await response.json();
+    }
+
+    default:
+      // 500 is possible for critical server erropr
+      console.log("unexpected getHistoricalPrices response");
+      const empty:HistoricalPrice[] = [];
+      return empty;
+  }
+}
+
 export const sellAsset = async (symbol: string, shares: number, price:number) => {
-  // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
   const sharesString: string = shares.toString();
