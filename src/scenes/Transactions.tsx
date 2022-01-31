@@ -50,7 +50,7 @@ const createDescription = (transaction: Transaction) => {
       break;
   }
 
-  console.log("Description for ", transaction, " -> ", description);
+  //console.log("Description for ", transaction, " -> ", description);
   return description;
 };
 
@@ -60,7 +60,6 @@ function Transactions() {
   const getData = (): object[] => {
     const tableModel : object[] = [];
     if (user && user.transactions) {
-      console.log('User.transactions.length = ', user.transactions.length)
       for (var transaction of user.transactions) {
           tableModel.push({
             date: formatDate(transaction.date),

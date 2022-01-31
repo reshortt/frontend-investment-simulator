@@ -3,6 +3,7 @@ import styled from "styled-components/macro";
 import { Link, useHistory } from "react-router-dom";
 import { CSSProperties, useState } from "react";
 import { doLogout } from "../APIService";
+import { showHistoricalPrices } from "../Calculations";
 
 enum ClickType {
   login = "/login",
@@ -82,7 +83,7 @@ export default function Navbar() {
 
       <button
         onClick={() => {
-          handleOnClick(ClickType.analysis);
+          showHistoricalPrices();
         }}
         style = {clickType===ClickType.analysis ? {color:"blue", fontWeight:"bold", background:"white"}: {color:undefined, fontWeight:undefined, background:undefined}}
 
@@ -103,7 +104,6 @@ export default function Navbar() {
         {" "}
         Trade{" "}
       </button>
-
 
       <button
         onClick={() => {

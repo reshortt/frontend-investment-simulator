@@ -6,9 +6,10 @@ import {
   getCash,
   getHistoricalPrices,
   getStockPrice,
+  getTransactions,
   lookupTicker,
 } from "../APIService";
-import { formatCurrency } from "../Calculations";
+import { formatCurrency, getHistoricalValues, PortfolioValue } from "../Calculations";
 import { COMMISSION, HistoricalPrice, StockPrices } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
@@ -102,14 +103,6 @@ export default function Buy() {
     return text;
   };
 
-  // debug function only
-  const showHistoricalPrices = async (tickerSymbol: string) => {
-    const prices: HistoricalPrice[] = await getHistoricalPrices(tickerSymbol);
-    console.log(
-      "Historical Prices for " + tickerSymbol + ":\n" + JSON.stringify(prices)
-    );
-  };
-
   const handlePurchase = async () => {
     if (cash < totalCost) {
       window.alert("You don't have enough cash for  that purchase ");
@@ -134,9 +127,8 @@ export default function Buy() {
                 "Purchase successful. New cash balance is " +
                   formatCurrency(remainingCash)
               );
-              window.location.assign("/transactions");
+             window.location.assign("/transactions");
               // console.log("showing historical prices *****************************************************")
-              // showHistoricalPrices(typedSymbol);
             }
           },
           () => {
@@ -195,3 +187,4 @@ export default function Buy() {
     </div>
   );
 }
+
