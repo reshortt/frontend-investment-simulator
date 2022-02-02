@@ -14,7 +14,6 @@ const createRequestAuthorization = (methodType = "GET"): RequestInit => {
 export const isLoggedIn = (): boolean =>
   !!sessionStorage.getItem(AUTH_TOKEN_KEY);
 
-
 export const doLogout = () => {
   sessionStorage.removeItem(AUTH_TOKEN_KEY)
   window.location.assign("/login")
@@ -100,7 +99,6 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
       return null;
   }
 };
-
 
 export const getBalance = async (yesterday: boolean): Promise<number> => {
   const requestOptions = createRequestAuthorization();
@@ -244,6 +242,39 @@ export const lookupTicker = async (
   }
 };
 
+
+
+export async function getStockPriceOnDate(
+  symbol: string,
+  date: Date
+): Promise<number> { 
+  const requestOptions = createRequestAuthorization();
+
+  const queryParams = new URLSearchParams ( {
+    ticker:symbol,
+    date: date.toDateString()
+  }
+  ) 
+  const queryURL = new URL("http://localhost:3005/API/getStockPriceOnDate");
+  queryURL.search = queryParams.toString()
+
+  console.log ("Query for ", symbol, " on ", date, "...")
+  const response = await fetch(queryURL, requestOptions);
+  switch (response.status) {
+    case 200: {
+      const responseObj =  await response.json()
+      console.log ("... ", responseObj.price)
+
+      return responseObj.price
+    }
+
+    default:
+      // 500 is possible for critical server erropr
+      console.log("unexpected buyAsset response");
+      return 0
+  }
+
+}
 export type BuyAssetResponse = {
   successful:boolean;
   remainingCash:number;
@@ -264,8 +295,6 @@ export const buyAsset = async (symbol: string, shares: number, price:number): Pr
   buySharesURL.search = buySharesQueryParams.toString();
 
   const response = await fetch(buySharesURL, requestOptions);
-
-  console.log("response: ", response.status);
 
   switch (response.status) {
     case 200: {

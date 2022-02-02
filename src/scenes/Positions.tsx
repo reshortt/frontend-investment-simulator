@@ -19,7 +19,7 @@ function Positions() {
     const data: object[] = [];
     if (user && user.assets) {
       for (var asset of user.assets) {
-        console.log("pushing asset = ", JSON.stringify(asset))
+        //console.log("pushing asset = ", JSON.stringify(asset))
         data.push({
           name: asset.stock.name,
           symbol: asset.stock.symbol,

@@ -18,7 +18,7 @@ function Analysis() {
         setData(calcData(historicalValues));
       });
     });
-  }, [data]);
+  }, []);
 
   const calcData = (
     values: PortfolioValue[]

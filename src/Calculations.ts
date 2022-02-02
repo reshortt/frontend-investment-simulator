@@ -1,5 +1,5 @@
 import { format, isValid } from "date-fns";
-import { getHistoricalPrices, getTransactions } from "./APIService";
+import { getStockPriceOnDate, getTransactions } from "./APIService";
 import {
   Asset,
   HistoricalPrice,
@@ -30,7 +30,7 @@ export type PortfolioValue = {
 export const getCostBasis = (asset: Asset): number => {
   var costBasis: number = 0;
   for (var lot of asset.lots) {
-    console.log(lot);
+    //console.log(lot);
     costBasis += lot.basis * lot.shares;
   }
   return costBasis;
@@ -108,32 +108,32 @@ export const formatDate = (date: Date, long:boolean): string => {
   return format(dateToFormat, formatStr);
 };
 
-async function getStockPriceOnDate(
-  symbol: string,
-  date: Date
-): Promise<number> {
-  let prices = priceMap.get(symbol);
-  if (!prices || prices === undefined) {
-    console.log ("Getting Price History for " + symbol + "...")
-    prices = await getHistoricalPrices(symbol);
-    priceMap.set(symbol, prices);
-    console.log ("Finished getting Price History for ", symbol , ". Entries: ", prices.length)
-  }
+// async function getStockPriceOnDate(
+//   symbol: string,
+//   date: Date
+// ): Promise<number> {
+//   let prices = priceMap.get(symbol);
+//   if (!prices || prices === undefined) {
+//     console.log ("Getting Price History for " + symbol + "...")
+//     prices = await getHistoricalPrices(symbol);
+//     priceMap.set(symbol, prices);
+//     console.log ("Finished getting Price History for ", symbol , ". Entries: ", prices.length)
+//   }
 
-  let lastPrice: number = 0;
-  let thisDate:Date = new Date(date)
+//   let lastPrice: number = 0;
+//   let thisDate:Date = new Date(date)
 
-  // brute force march from beginning to end
-  for (let price of prices) {
-    let priceDate:Date = new Date(price.date)
+//   // brute force march from beginning to end
+//   for (let price of prices) {
+//     let priceDate:Date = new Date(price.date)
 
-    if (priceDate > thisDate) {
-        break
-    } 
-    lastPrice = price.price;
-  }
-  return lastPrice;
-}
+//     if (priceDate > thisDate) {
+//         break
+//     } 
+//     lastPrice = price.price;
+//   }
+//   return lastPrice;
+// }
 
 
 function getTransactionsOnDate(
@@ -146,7 +146,7 @@ function getTransactionsOnDate(
     let transactionDate: Date = new Date(transaction.date);
     transactionDate.setHours(0, 0, 0, 0);
     if (transactionDate > date) break;
-    if (transactionDate.getTime() == date.getTime())
+    if (transactionDate.getTime() === date.getTime())
       dateTransactions.push(transaction);
   }
   return dateTransactions;
