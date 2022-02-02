@@ -50,7 +50,7 @@ function Overview() {
       <label>Account Created:</label>
       <label>
         {"  "}
-        {userInfo && !loadingUserInfo && formatDate(userInfo.created)}
+        {userInfo && !loadingUserInfo && formatDate(userInfo.created, true)}
       </label>
       <br />
       <label>

@@ -1,16 +1,13 @@
 import { ChangeEvent, useEffect, useState, useRef } from "react";
-import { getSystemErrorMap } from "util";
 import {
   buyAsset,
   BuyAssetResponse,
   getCash,
-  getHistoricalPrices,
   getStockPrice,
-  getTransactions,
   lookupTicker,
 } from "../APIService";
-import { formatCurrency, getHistoricalValues, PortfolioValue } from "../Calculations";
-import { COMMISSION, HistoricalPrice, StockPrices } from "../types";
+import { formatCurrency } from "../Calculations";
+import { COMMISSION } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
   "Please enter a valid stock ticker symbol";

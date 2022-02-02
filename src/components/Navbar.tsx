@@ -83,7 +83,7 @@ export default function Navbar() {
 
       <button
         onClick={() => {
-          showHistoricalPrices();
+          handleOnClick(ClickType.analysis);
         }}
         style = {clickType===ClickType.analysis ? {color:"blue", fontWeight:"bold", background:"white"}: {color:undefined, fontWeight:undefined, background:undefined}}
 

@@ -167,7 +167,7 @@ export const getTransactions = async (): Promise<Transaction[]> => {
     case 200:
       const userResponseObj = await response.json();
 
-      console.log("Transactions retrieved: " + userResponseObj.transactions);
+      //console.log("Transactions retrieved: " + userResponseObj.transactions);
       return userResponseObj.transactions;
 
     case 401:
@@ -293,7 +293,10 @@ export const getHistoricalPrices = async (symbol:string):Promise<HistoricalPrice
     tickerSymbol: symbol
   });
   url.search = params.toString()
+
+  console.log("*** Fetch request made: ", url)
   const response = await fetch (url, requestOptions)
+  console.log("***Response received***")
 
   switch (response.status) {
     case 200: {
@@ -350,8 +353,6 @@ export const getStockPrice = async (
     tickerSymbol: tickerSymbol,
   });
   getStockPriceUrl.search = getStockPriceQueryParams.toString();
-
-  console.log("getting price for ", tickerSymbol, " using ", requestOptions);
 
   const response = await fetch(getStockPriceUrl, requestOptions);
 

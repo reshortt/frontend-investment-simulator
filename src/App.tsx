@@ -9,6 +9,7 @@ import {isLoggedIn } from "./APIService";
 import Trade from "./scenes/Trade";
 import Positions from "./scenes/Positions";
 import Transactions from "./scenes/Transactions";
+import Analysis from "./scenes/Analysis";
 
 export default function App() {
   
@@ -37,6 +38,9 @@ export default function App() {
           </Route>
           <Route path="/positions">
             <Positions />
+          </Route>
+          <Route path = "/analysis">
+            <Analysis />
           </Route>
           <Route path = "/trade">
             <Trade/>

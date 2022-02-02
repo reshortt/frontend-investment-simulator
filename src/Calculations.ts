@@ -1,6 +1,5 @@
 import { format, isValid } from "date-fns";
-import { stringify } from "querystring";
-import { buyAsset, getHistoricalPrices, getTransactions } from "./APIService";
+import { getHistoricalPrices, getTransactions } from "./APIService";
 import {
   Asset,
   HistoricalPrice,
@@ -65,12 +64,6 @@ export const getAccountValue = (user: User): number => {
 };
 
 export const getPercentOfAccount = (user: User, asset: Asset): number => {
-  console.log(
-    "percent of ",
-    asset.stock.name,
-    ": ",
-    getAssetValue(asset) / getAccountValue(user)
-  );
   return getAssetValue(asset) / getAccountValue(user);
 };
 
@@ -107,21 +100,12 @@ export const formatPercent = (percent: number): string => {
   );
 };
 
-// export const  formatDate = (date: Date): string => {
-//   if (!date) return "";
-
-//   var parsedDate = moment("MMMM dd, YYYY");
-//   const origString:string = new Date(date).toString();
-//   console.log("Trying to convert date: ", date, " -> ", origString)
-//   const formatted:string = parsedDate.format(origString);
-//   console.log("---> parsed to ", formatted)
-//   return formatted
-// };
-
-export const formatDate = (date: Date): string => {
+export const formatDate = (date: Date, long:boolean): string => {
   var dateToFormat: Date = new Date(date);
   if (!isValid(dateToFormat)) return "";
-  return format(dateToFormat, "MMMM dd, yyyy");
+  const formatStr = long? "MMMM dd, yyyy" : "yyyy-MM-dd"
+
+  return format(dateToFormat, formatStr);
 };
 
 async function getStockPriceOnDate(
@@ -130,8 +114,10 @@ async function getStockPriceOnDate(
 ): Promise<number> {
   let prices = priceMap.get(symbol);
   if (!prices || prices === undefined) {
+    console.log ("Getting Price History for " + symbol + "...")
     prices = await getHistoricalPrices(symbol);
     priceMap.set(symbol, prices);
+    console.log ("Finished getting Price History for ", symbol , ". Entries: ", prices.length)
   }
 
   let lastPrice: number = 0;
@@ -146,23 +132,9 @@ async function getStockPriceOnDate(
     } 
     lastPrice = price.price;
   }
-  console.log("Price for ", symbol, " on ", thisDate, ": ", lastPrice)
   return lastPrice;
 }
 
-async function getPortfolioValue(
-  portfolio: PortfolioSnapshot
-): Promise<number> {
-  let value: number = 0;
-  for (let position of portfolio.positions) {
-    const price: number = await getStockPriceOnDate(
-      position.symbol,
-      portfolio.date
-    );
-    value += price * position.shares;
-  }
-  return value + portfolio.cash;
-}
 
 function getTransactionsOnDate(
   transactions: Transaction[],
@@ -194,8 +166,6 @@ async function getPortfolioSnapshots(
     date <= today;
     date.setDate(date.getDate() + 1)
   ) {
-    //console.log("Processing historical date ", date, "...");
-
     const dateTransactions: Transaction[] = getTransactionsOnDate(
       transactions,
       date

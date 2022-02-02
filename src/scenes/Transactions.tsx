@@ -62,7 +62,7 @@ function Transactions() {
     if (user && user.transactions) {
       for (var transaction of user.transactions) {
           tableModel.push({
-            date: formatDate(transaction.date),
+            date: formatDate(transaction.date, true),
             description: createDescription(transaction),
             amount: formatCurrency(transaction.amount),
 
