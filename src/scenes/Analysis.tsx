@@ -7,10 +7,10 @@ import {
 } from "../Calculations";
 import { Line } from "@ant-design/plots";
 
-type DateValue = { date: Date; value: number };
+type DateValue = { date: string; value: number };
 
 function Analysis() {
-  const [data, setData] = useState<{ date: string; value: number }[]>([]);
+  const [data, setData] = useState<DateValue[] | undefined>();
 
   useEffect(() => {
     getTransactions().then((transactions) => {
@@ -22,8 +22,8 @@ function Analysis() {
 
   const calcData = (
     values: PortfolioValue[]
-  ): { date: string; value: number }[] => {
-    const dateData: { date: string; value: number }[] = [];
+  ): DateValue[] => {
+    const dateData: DateValue[] = [];
     for (let value of values) {
       dateData.push({
         date: formatDate(value.date, false),
@@ -72,7 +72,7 @@ function Analysis() {
   return (
     <div className="Analysis">
       <header className="Analysis-header">
-        {data.length == 0 ? (
+        {data=== undefined ? (
           <div>
             {" "}
             <label> Calculating Historical Values... </label>{" "}

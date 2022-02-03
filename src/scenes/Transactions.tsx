@@ -1,100 +1,103 @@
 import { useEffect, useState } from "react";
-import { getUser } from "../APIService";
+import { getTransactions, getUser } from "../APIService";
 import { Transaction, TransactionType, User } from "../types";
 import { Table } from "antd";
-import {
-  formatCurrency,
-  formatDate,
-} from "../Calculations";
+import { formatCurrency, formatDate } from "../Calculations";
 
-const createDescription = (transaction: Transaction) => {
-  var description: string = "";
-
-  switch (transaction.type) {
-    case TransactionType.BUY:
-      description =
-        "Buy " +
-        transaction.shares +
-        " of " +
-        transaction.name +
-        " (" +
-        transaction.symbol +
-        ")";
-      break;
-
-    case TransactionType.DIVIDEND:
-      description =
-        "Dividend Received from " +
-        transaction.name +
-        " (" +
-        transaction.symbol +
-        ")";
-      break;
-
-    case TransactionType.GIFT:
-      description = "Initial Deposit";
-      break;
-    case TransactionType.SELL:
-      description =
-        "Sell " +
-        transaction.shares +
-        " of " +
-        transaction.name +
-        " (" +
-        transaction.symbol +
-        ")";
-      break;
-    default:
-      console.log("This is transaction type: " + transaction.type);
-      description = "There is no describing this transaction";
-      break;
-  }
-
-  //console.log("Description for ", transaction, " -> ", description);
-  return description;
+type TransactionRow = {
+  date: string;
+  description: string;
+  amount: string;
+  cash: string;
 };
 
 function Transactions() {
-  const [user, setUser] = useState<User | null>();
-
-  const getData = (): object[] => {
-    const tableModel : object[] = [];
-    if (user && user.transactions) {
-      for (var transaction of user.transactions) {
-          tableModel.push({
-            date: formatDate(transaction.date, true),
-            description: createDescription(transaction),
-            amount: formatCurrency(transaction.amount),
-
-            cash: formatCurrency(transaction.cash)
-          });
-      }
-    }
-
-
-    return tableModel;
-  };
-
-  const getColumns = (): object[] => {
-    return [
-      { title: "Date", dataIndex: "date", key: "date" },
-      { title: "Description", dataIndex: "description", key: "description" },
-      { title: "Amount", dataIndex: "amount", key: "amount" },
-      { title: "Cash Balance", dataIndex: "cash", key: "cash" },
-    ];
-  };
+  const [data, setData] = useState<TransactionRow[] | undefined>();
 
   useEffect(() => {
-    getUser().then((foundUser) => {
-      setUser(foundUser);
+    getTransactions().then((transactions) => {
+      setData(calcData(transactions));
     });
   }, []);
 
+  const calcData = (transactions: Transaction[]): TransactionRow[] => {
+    const rows: TransactionRow[] = [];
+    for (var transaction of transactions) {
+      rows.push({
+        date: formatDate(transaction.date, true),
+        description: createDescription(transaction),
+        amount: formatCurrency(transaction.amount),
+        cash: formatCurrency(transaction.cash),
+      });
+    }
+    return rows;
+  };
+
+  const createDescription = (transaction: Transaction) => {
+    var description: string = "";
+
+    switch (transaction.type) {
+      case TransactionType.BUY:
+        description =
+          "Buy " +
+          transaction.shares +
+          " of " +
+          transaction.name +
+          " (" +
+          transaction.symbol +
+          ")";
+        break;
+
+      case TransactionType.DIVIDEND:
+        description =
+          "Dividend Received from " +
+          transaction.name +
+          " (" +
+          transaction.symbol +
+          ")";
+        break;
+
+      case TransactionType.GIFT:
+        description = "Initial Deposit";
+        break;
+      case TransactionType.SELL:
+        description =
+          "Sell " +
+          transaction.shares +
+          " of " +
+          transaction.name +
+          " (" +
+          transaction.symbol +
+          ")";
+        break;
+      default:
+        console.log("This is transaction type: " + transaction.type);
+        description = "There is no describing this transaction";
+        break;
+    }
+
+    //console.log("Description for ", transaction, " -> ", description);
+    return description;
+  };
+
+  const columns: object[] = [
+    { title: "Date", dataIndex: "date", key: "date" },
+    { title: "Description", dataIndex: "description", key: "description" },
+    { title: "Amount", dataIndex: "amount", key: "amount" },
+    { title: "Cash Balance", dataIndex: "cash", key: "cash" },
+  ];
+
   return (
     <div className="Transactions">
-      <header className="Transactions-header">
-        <Table dataSource={getData()} columns={getColumns()} />
-      </header>
+      <header className="Transactions-header"></header>
+      {data === undefined ? (
+        <div>
+          {" "}
+          <label> Retrieving Transactions... </label>{" "}
+        </div>
+      ) : (
+        <Table dataSource={data} columns={columns} />
+      )}
     </div>
   );
 }
