@@ -10,32 +10,34 @@ import { Line } from "@ant-design/plots";
 type DateValue = { date: string; value: number };
 
 function Analysis() {
-  const [data, setData] = useState<DateValue[] | undefined>();
+  const [config, setConfig] = useState<object | undefined>(undefined);
 
   useEffect(() => {
     getTransactions().then((transactions) => {
       getHistoricalValues(transactions).then((historicalValues) => {
-        setData(calcData(historicalValues));
+        const chartData = createChartData(historicalValues);
+        const config = createConfig(chartData);
+        setConfig(config)
       });
     });
   }, []);
 
-  const calcData = (
+  const createChartData = (
     values: PortfolioValue[]
   ): DateValue[] => {
-    const dateData: DateValue[] = [];
+    const chartData: DateValue[] = [];
     for (let value of values) {
-      dateData.push({
+      chartData.push({
         date: formatDate(value.date, false),
         value: value.value,
       });
     }
-    return dateData;
+    return chartData;
   };
 
-  const createConfig = () => {
-    const config = {
-      data,
+  const createConfig = (chartData:DateValue[]) => {
+    return {
+      data:chartData,
       padding: "auto",
       xField: "date",
       yField: "value",
@@ -65,21 +67,20 @@ function Analysis() {
         //     },
         //   },
       ],
-    };
-    return config;
+    }
   };
 
   return (
     <div className="Analysis">
       <header className="Analysis-header">
-        {data=== undefined ? (
+        {config == undefined ? (
           <div>
             {" "}
             <label> Calculating Historical Values... </label>{" "}
           </div>
         ) : (
           //@ts-ignore
-          <Line {...createConfig()} />
+          <Line {...config} />
         )}
       </header>
     </div>

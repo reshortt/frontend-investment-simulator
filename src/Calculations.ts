@@ -9,7 +9,6 @@ import {
   User,
 } from "./types";
 
-const priceMap = new Map<string, HistoricalPrice[]>();
 
 type Position = {
   symbol: string;
@@ -158,12 +157,14 @@ async function getPortfolioSnapshots(
   const tickerMap = new Map<string, number>();
 
   let snapshots: PortfolioSnapshot[] = [];
-  const today: Date = new Date(Date.now());
   let cash: number = 0;
+  const startDate:Date = new Date(transactions[0].date)
+  const endDate: Date = new Date(Date.now());
+  endDate.setDate(endDate.getDate() - 2)
 
   for (
-    let date: Date = new Date(transactions[0].date);
-    date <= today;
+    let date: Date = startDate;
+    date < endDate;
     date.setDate(date.getDate() + 1)
   ) {
     const dateTransactions: Transaction[] = getTransactionsOnDate(

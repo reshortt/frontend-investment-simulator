@@ -5,6 +5,7 @@ import { Table } from "antd";
 import {
   formatCurrency,
   formatPercent,
+  getAccountValue,
   getAssetValue,
   getCostBasis,
   getGainLoss,
@@ -12,75 +13,104 @@ import {
   getQuantity,
 } from "../Calculations";
 
+type PositionRow = {
+  name: string;
+  symbol: string;
+  bid: string;
+  ask: string;
+  quantity: string;
+  costBasis: string;
+  currentValue: string;
+  percentOfAccount: string;
+  gain: string;
+};
+
 function Positions() {
-  const [user, setUser] = useState<User | null>();
-
-  const getData = (): object[] => {
-    const data: object[] = [];
-    if (user && user.assets) {
-      for (var asset of user.assets) {
-        //console.log("pushing asset = ", JSON.stringify(asset))
-        data.push({
-          name: asset.stock.name,
-          symbol: asset.stock.symbol,
-          // lastPrice: formatCurrency(
-          //   asset.stock.price.bid || asset.stock.price.previousClose
-          // ),
-          bid: formatCurrency((asset.stock.price.bid || asset.stock.price.previousClose)),
-          ask: formatCurrency((asset.stock.price.ask || asset.stock.price.previousClose)),
-          quantity: getQuantity(asset),
-          costBasis: formatCurrency(getCostBasis(asset)),
-          currentValue: formatCurrency(getAssetValue(asset)),
-          percentOfAccount: formatPercent(getPercentOfAccount(user, asset)),
-          gain: formatCurrency(getGainLoss(asset)),
-        });
-      }
-    }
-    if (user) {
-      data.push({
-        name: "Cash",
-        currentValue: formatCurrency(user.info.cash),
-      });
-    }
-    return data;
-  };
-
-  const getColumns = (): object[] => {
-    return [
-      { title: "Symbol", dataIndex: "symbol", key: "symbol" },
-      { title: "Asset", dataIndex: "name", key: "name" },
-      { title: "Quantity", dataIndex: "quantity", key: "quantity" },
-      { title: "Bid", dataIndex: "bid", key: "bid" },
-      { title: "Ask", dataIndex: "ask", key: "ask" },
-      {
-        title: "Current Value",
-        dataIndex: "currentValue",
-        key: "currentValue",
-      },
-      { title: "Cost Basis", dataIndex: "costBasis", key: "costBasis" },
-
-      {
-        title: "Percentage of Account",
-        dataIndex: "percentOfAccount",
-        key: "percentOfAccount",
-      },
-      { title: "Total Gain/Loss", dataIndex: "gain", key: "gain" },
-    ];
-  };
+  const [data, setData] = useState<PositionRow[] | undefined>();
 
   useEffect(() => {
     getUser().then((foundUser) => {
-      setUser(foundUser);
+      if (foundUser) {
+        setData(calcData(foundUser));
+      }
     });
   }, []);
+
+  const calcData = (user: User): PositionRow[] => {
+    console.log("calculating row data...");
+    const data: PositionRow[] = [];
+    var totalBasis:number = 0
+    var totalGain:number = 0
+    for (var asset of user.assets) {
+      //console.log("pushing asset = ", JSON.stringify(asset))
+      totalGain += getGainLoss(asset)
+      totalBasis += getCostBasis(asset)
+      data.push({
+        name: asset.stock.name,
+        symbol: asset.stock.symbol,
+        // lastPrice: formatCurrency(
+        //   asset.stock.price.bid || asset.stock.price.previousClose
+        // ),
+        bid: formatCurrency(
+          asset.stock.price.bid || asset.stock.price.previousClose
+        ),
+        ask: formatCurrency(
+          asset.stock.price.ask || asset.stock.price.previousClose
+        ),
+        quantity: getQuantity(asset).toString(),
+        costBasis: formatCurrency(getCostBasis(asset)),
+        currentValue: formatCurrency(getAssetValue(asset)),
+        percentOfAccount: formatPercent(getPercentOfAccount(user, asset)),
+        gain: formatCurrency(getGainLoss(asset)),
+      });
+    }
+    //@ts-ignore
+    data.push({
+      name: "Cash",
+      currentValue: formatCurrency(user.info.cash),
+      costBasis: formatCurrency(user.info.cash),
+      percentOfAccount: formatPercent(user.info.cash / getAccountValue(user)),
+    });
+
+  
+    return data;
+  };
+
+  const columns: object[] = [
+    { title: "Symbol", dataIndex: "symbol", key: "symbol" },
+    { title: "Asset", dataIndex: "name", key: "name" },
+    { title: "Quantity", dataIndex: "quantity", key: "quantity" },
+    { title: "Bid", dataIndex: "bid", key: "bid" },
+    { title: "Ask", dataIndex: "ask", key: "ask" },
+    {
+      title: "Current Value",
+      dataIndex: "currentValue",
+      key: "currentValue",
+    },
+    { title: "Cost Basis", dataIndex: "costBasis", key: "costBasis" },
+
+    {
+      title: "Percentage of Account",
+      dataIndex: "percentOfAccount",
+      key: "percentOfAccount",
+    },
+    { title: "Total Gain/Loss", dataIndex: "gain", key: "gain" },
+  ];
 
   return (
     <div className="Positions">
       <header className="Overview-header">
-        <Table dataSource={getData()} columns={getColumns()} />
+        {data === undefined ? (
+          <div>
+            {" "}
+            <label> Calculating Positions... </label>{" "}
+          </div>
+        ) : (
+          <Table dataSource={data} columns={columns} />
+        )}
       </header>
     </div>
   );
 }
 
-export default Positions
+export default Positions;

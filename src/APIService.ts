@@ -258,12 +258,10 @@ export async function getStockPriceOnDate(
   const queryURL = new URL("http://localhost:3005/API/getStockPriceOnDate");
   queryURL.search = queryParams.toString()
 
-  console.log ("Query for ", symbol, " on ", date, "...")
   const response = await fetch(queryURL, requestOptions);
   switch (response.status) {
     case 200: {
       const responseObj =  await response.json()
-      console.log ("... ", responseObj.price)
 
       return responseObj.price
     }
