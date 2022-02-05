@@ -34,7 +34,7 @@ function Login() {
       <button onClick={handleLoginButtonClick}>Login</button>
       <br />
       <label>No account?</label>
-      <Link to="/signup"> Sign Up </Link>
+      <label> Sign Up </label>
       <header className="Login-header"></header>
     </div>
   );

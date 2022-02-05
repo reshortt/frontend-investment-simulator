@@ -1,6 +1,6 @@
 import styled from "styled-components/macro";
 
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { CSSProperties, useState } from "react";
 import { doLogout } from "../APIService";
 import { showHistoricalPrices } from "../Calculations";

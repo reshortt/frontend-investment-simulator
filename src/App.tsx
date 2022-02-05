@@ -1,23 +1,25 @@
 import Login from "./scenes/Login";
 import Header from "./components/Header";
-import Navbar from "./components/Navbar";
-import SignUp from "./scenes/SignUp";
 
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Overview from "./scenes/Overview";
 import {isLoggedIn } from "./APIService";
-import Trade from "./scenes/Trade";
-import Positions from "./scenes/Positions";
-import Transactions from "./scenes/Transactions";
-import Analysis from "./scenes/Analysis";
+import NavPane from "./scenes/NavPane";
 
 export default function App() {
   
   return (
-    <Router>
+    <>
+      <Header/>
+      {isLoggedIn() ? <NavPane /> : <Login />}
+    </>
+  );
+}
+
+/*
+
+<Router>
       <div>
         <Header />
-        {isLoggedIn() && <Navbar />}
+        {isLoggedIn() ? <NavPane /> : <Login/>}
         <br/>
         <Switch>
           <Route path="/signup">
@@ -55,5 +57,5 @@ export default function App() {
         </Switch>
       </div>
     </Router>
-  );
-}
+
+*/
