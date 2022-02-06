@@ -1,3 +1,4 @@
+import { Form } from "antd";
 import { useEffect, useState } from "react";
 import { getUser, getUserInfo } from "../APIService";
 import {
@@ -7,6 +8,7 @@ import {
   getGain,
 } from "../Calculations";
 import { User, UserInfo } from "../types";
+import "antd/dist/antd.css";
 
 function Overview() {
   const [user, setUser] = useState<User>();
@@ -34,53 +36,78 @@ function Overview() {
   };
 
   const getGainString = (user: User | undefined): string => {
-    if (loadingUser|| loadingUserInfo) return "...";
+    if (loadingUser || loadingUserInfo) return "...";
     if (!user) return "";
     return formatCurrency(getGain(user));
   };
 
-  return (
-    <div className="Overview">
-      <label>
-        Name:
-        {"  "}
-      </label>
-      <label>{userInfo && !loadingUserInfo && userInfo.name}</label>
-      <br />
-      <label>Account Created:</label>
-      <label>
-        {"  "}
-        {userInfo && !loadingUserInfo && formatDate(userInfo.created, true)}
-      </label>
-      <br />
-      <label>
-        Cash Balance:
-      </label>
-      <label>
-        {"  "}
-        {userInfo && !loadingUserInfo && formatCurrency(userInfo.cash)}
-      </label>
-      <br/>
-      <label>
-        Account Value:
-        {"  "}
-        {getAccountValueString(user)}
-      </label>
-      <br />
+  const getUserID = ():string => {
+    if (loadingUserInfo || loadingUser || !userInfo) return "...";
+    console.log("email for ", userInfo.name, " is ", userInfo.email)
+    return userInfo.email
+  };
 
-      <label> Total Gain/Loss: </label>
-      <label
-        style={
-          user && !loadingUser && getGain(user) < 0
-            ? { color: "red" }
-            : { color: undefined }
-        }
-      >
-        {"  "}
-        {getGainString(user)}
-      </label>
-      <header className="Overview-header"></header>
-    </div>
+  const formItemLayout = {
+    labelCol: {
+      span: 3,
+      offset: 1,
+    },
+    wrapperCol: {
+      span: 36,
+    },
+  };
+
+  return (
+    <>
+      <br />
+      <Form name="overview" {...formItemLayout}>
+        <Form.Item label="Name" labelAlign="left">
+          <span className="ant-form-text">
+            {userInfo && !loadingUserInfo && userInfo.name
+              ? userInfo.name
+              : "..."}
+          </span>
+        </Form.Item>
+
+        <Form.Item label="User ID" labelAlign="left">
+          <span className="ant-form-text">{getUserID()}</span>
+        </Form.Item>
+
+        <Form.Item label="Account Created" labelAlign="left">
+          <span className="ant-form-text">
+            {userInfo && !loadingUserInfo
+              ? formatDate(userInfo.created, true)
+              : "..."}
+          </span>
+        </Form.Item>
+
+        <Form.Item label="Account Value" labelAlign="left">
+          <span className="ant-form-text">{getAccountValueString(user)}</span>
+        </Form.Item>
+
+        <Form.Item label="Cash Balance" labelAlign="left">
+          <span className="ant-form-text">
+            {userInfo && !loadingUserInfo
+              ? formatCurrency(userInfo.cash)
+              : "..."}
+          </span>
+        </Form.Item>
+
+        <Form.Item label="Total Gain/Loss" labelAlign="left">
+          <span className="ant-form-text">
+            <label
+              style={
+                user && !loadingUser && getGain(user) < 0
+                  ? { color: "red" }
+                  : { color: undefined }
+              }
+            >
+              {getGainString(user)}
+            </label>
+          </span>
+        </Form.Item>
+      </Form>
+    </>
   );
 }
 
