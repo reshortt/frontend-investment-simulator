@@ -5,26 +5,25 @@ import {
   getHistoricalValues,
   PortfolioValue,
 } from "../Calculations";
-import { Line } from "@ant-design/plots";
+import { Line, LineConfig } from "@ant-design/plots";
+import { Empty } from "antd";
 
 type DateValue = { date: string; value: number };
 
 function Analysis() {
-  const [config, setConfig] = useState<object | undefined>(undefined);
+  const [config, setConfig] = useState<LineConfig | undefined>(undefined);
 
   useEffect(() => {
     getTransactions().then((transactions) => {
       getHistoricalValues(transactions).then((historicalValues) => {
         const chartData = createChartData(historicalValues);
-        const config = createConfig(chartData);
-        setConfig(config)
+        const newConfig: LineConfig = createConfig(chartData);
+        setConfig(newConfig);
       });
     });
   }, []);
 
-  const createChartData = (
-    values: PortfolioValue[]
-  ): DateValue[] => {
+  const createChartData = (values: PortfolioValue[]): DateValue[] => {
     const chartData: DateValue[] = [];
     for (let value of values) {
       chartData.push({
@@ -35,9 +34,9 @@ function Analysis() {
     return chartData;
   };
 
-  const createConfig = (chartData:DateValue[]) => {
+  const createConfig = (chartData: DateValue[]): LineConfig => {
     return {
-      data:chartData,
+      data: chartData,
       padding: "auto",
       xField: "date",
       yField: "value",
@@ -67,7 +66,7 @@ function Analysis() {
         //     },
         //   },
       ],
-    }
+    };
   };
 
   return (
@@ -78,6 +77,8 @@ function Analysis() {
             {" "}
             <label> Calculating Historical Values... </label>{" "}
           </div>
+        ) : config.data.length < 7 ? (
+          <Empty description="History unavailable for accounts created within the last week"></Empty>
         ) : (
           //@ts-ignore
           <Line {...config} />

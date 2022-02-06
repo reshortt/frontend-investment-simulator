@@ -15,7 +15,7 @@ const handleLogout = () => {
   if (!isOK) return
    doLogout()
 }
-const logoutButton = <Button onClick={handleLogout}>Logout</Button>;
+const logoutButton = <Button type = "primary" onClick={handleLogout}>Logout</Button>;
 
 function NavPane() {
  

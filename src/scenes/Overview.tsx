@@ -50,7 +50,7 @@ function Overview() {
   const formItemLayout = {
     labelCol: {
       span: 3,
-      offset: 1,
+      offset: 0,
     },
     wrapperCol: {
       span: 36,
@@ -70,7 +70,9 @@ function Overview() {
         </Form.Item>
 
         <Form.Item label="User ID" labelAlign="left">
-          <span className="ant-form-text">{getUserID()}</span>
+          <span className="ant-form-text">{userInfo && !loadingUserInfo && userInfo.email
+              ? userInfo.email
+              : "..."}</span>
         </Form.Item>
 
         <Form.Item label="Account Created" labelAlign="left">
