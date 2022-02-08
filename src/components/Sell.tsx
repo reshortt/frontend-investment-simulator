@@ -67,7 +67,7 @@ export default function Sell() {
         const response = await sellAsset(
           asset.stock.symbol,
           sharesToSell,
-          price.ask || 0
+          price.bid || 0
         );
         if (response) {
           window.alert(
@@ -127,6 +127,8 @@ export default function Sell() {
               <Select
                 onChange={handleAssetChange}
                 defaultValue={assets[0].stock.symbol}
+                value={asset?.stock.symbol}
+                
               >
                 {assets.map((currAsset) => {
                   return (
@@ -154,6 +156,11 @@ export default function Sell() {
             placeholder={asset ? "" + getShareCount(asset) + " shares of " + asset.stock.symbol + " available to sell" : "Enter number of shares to sell"}
             onChange={handleSharesToSell}
             value={sharesToSell == 0? undefined: sharesToSell}
+            style={
+              sharesToSell > getShareCount(asset)
+                ? { color: "red" }
+                : { color: undefined }
+            }
           ></Input>
          
         </Form.Item>
@@ -168,9 +175,11 @@ export default function Sell() {
           ? "..."
           : sharesToSell > getShareCount(asset) 
           ?
-          "You may sell a maximum of " + getShareCount(asset) + " shares of " + asset?.stock.name
+          "You may sell a maximum of " + getShareCount(asset) + " shares of " + asset?.stock.symbol
+          : sharesToSell == 0?
+          "Please enter the number of shares to sell"
           : sharesToSell > 0
-          ? formatCurrency(price.ask * sharesToSell - COMMISSION)
+          ? formatCurrency(price.bid * sharesToSell - COMMISSION)
           : 0}
           </label>
         </Form.Item>
