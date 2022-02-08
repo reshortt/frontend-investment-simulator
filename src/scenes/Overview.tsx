@@ -41,19 +41,20 @@ function Overview() {
     return formatCurrency(getGain(user));
   };
 
-  const getUserID = ():string => {
+  const getUserID = (): string => {
     if (loadingUserInfo || loadingUser || !userInfo) return "...";
-    console.log("email for ", userInfo.name, " is ", userInfo.email)
-    return userInfo.email
+    console.log("email for ", userInfo.name, " is ", userInfo.email);
+    return userInfo.email;
   };
 
   const formItemLayout = {
     labelCol: {
-      span: 3,
+      span: 2,
       offset: 0,
     },
     wrapperCol: {
       span: 36,
+      offset: 1
     },
   };
 
@@ -61,7 +62,7 @@ function Overview() {
     <>
       <br />
       <Form name="overview" {...formItemLayout}>
-        <Form.Item label="Name" labelAlign="left">
+        <Form.Item label="Name" labelAlign="right">
           <span className="ant-form-text">
             {userInfo && !loadingUserInfo && userInfo.name
               ? userInfo.name
@@ -69,13 +70,15 @@ function Overview() {
           </span>
         </Form.Item>
 
-        <Form.Item label="User ID" labelAlign="left">
-          <span className="ant-form-text">{userInfo && !loadingUserInfo && userInfo.email
+        <Form.Item label="User ID" labelAlign="right">
+          <span className="ant-form-text">
+            {userInfo && !loadingUserInfo && userInfo.email
               ? userInfo.email
-              : "..."}</span>
+              : "..."}
+          </span>
         </Form.Item>
 
-        <Form.Item label="Account Created" labelAlign="left">
+        <Form.Item label="Account Created" labelAlign="right">
           <span className="ant-form-text">
             {userInfo && !loadingUserInfo
               ? formatDate(userInfo.created, true)
@@ -83,11 +86,11 @@ function Overview() {
           </span>
         </Form.Item>
 
-        <Form.Item label="Account Value" labelAlign="left">
+        <Form.Item label="Account Value" labelAlign="right">
           <span className="ant-form-text">{getAccountValueString(user)}</span>
         </Form.Item>
 
-        <Form.Item label="Cash Balance" labelAlign="left">
+        <Form.Item label="Cash Balance" labelAlign="right">
           <span className="ant-form-text">
             {userInfo && !loadingUserInfo
               ? formatCurrency(userInfo.cash)
@@ -95,7 +98,7 @@ function Overview() {
           </span>
         </Form.Item>
 
-        <Form.Item label="Total Gain/Loss" labelAlign="left">
+        <Form.Item label="Total Gain/Loss" labelAlign="right">
           <span className="ant-form-text">
             <label
               style={

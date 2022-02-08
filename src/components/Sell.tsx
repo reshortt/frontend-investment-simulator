@@ -1,12 +1,19 @@
+import { Button, Form, Input, Select } from "antd";
 import { ChangeEvent, useEffect, useState } from "react";
 import Autocomplete from "react-autocomplete";
-import { buyAsset, getAssets, getShareCount, getStockPrice, sellAsset } from "../APIService";
+import {
+  buyAsset,
+  getAssets,
+  getShareCount,
+  getStockPrice,
+  sellAsset,
+} from "../APIService";
 import { formatCurrency } from "../Calculations";
 import { Asset, COMMISSION, StockPrices } from "../types";
 
 export default function Sell() {
-  const [assets, setAssets] = useState<Asset[]>();
-  const [asset, setAsset] = useState<Asset | null>();
+  const [assets, setAssets] = useState<Asset[] | undefined>(undefined);
+  const [asset, setAsset] = useState<Asset | undefined>(undefined);
   const [sharesToSell, setSharesToSell] = useState(0);
   const [price, setPrice] = useState<StockPrices>({
     bid: 0,
@@ -16,39 +23,43 @@ export default function Sell() {
 
   const [loadingPrice, setLoadingPrice] = useState<boolean>(false);
 
-  const handleAssetChange = (val: ChangeEvent<HTMLSelectElement>) => {
-    const thisAsset = assets?.find(
-      (currAsset) => currAsset.stock.symbol === val.target.value
-    );
-    console.log(
-      "Asset changed to ",
-      thisAsset?.stock.name,
-      " and ",
-      thisAsset?.stock.symbol
-    );
-    setAsset(thisAsset);
+  const handleAssetChange = (value: string) => {
+    if (assets && value) {
+      const foundAsset: Asset | undefined = assets.find(
+        (currAsset) =>
+          currAsset.stock.symbol.toUpperCase() === value.toUpperCase()
+      );
+      if (foundAsset) {
+        setAsset(foundAsset);
+        setSharesToSell(0);
+      }
+    }
   };
 
   const handleSharesToSell = (e: ChangeEvent<HTMLInputElement>) => {
-    setSharesToSell(e.target.valueAsNumber);
+    const typedValue:string =  e.target.value
+    const shares:number = Number.parseInt(typedValue)
+    if (shares)
+      setSharesToSell(shares);
+    else
+      setSharesToSell(0)
   };
 
   const handleSale = async () => {
-    if (sharesToSell >  getShareCount(asset)) {
-      window.alert("Insufficient shares for this sale")
-      return
+    if (sharesToSell > getShareCount(asset)) {
+      window.alert("Insufficient shares for this sale");
+      return;
     }
 
     if (asset) {
-
-      const totalCost:number = price.bid * sharesToSell - COMMISSION;
+      const totalCost: number = price.bid * sharesToSell - COMMISSION;
       const msg: string =
         "Please confirm sale of " +
         sharesToSell +
         " shares of " +
         asset.stock.name +
-        " for a total of $" +
-        totalCost +
+        " for a total of " +
+        formatCurrency(totalCost) + 
         ".";
       const isOK: boolean = window.confirm(msg);
 
@@ -59,15 +70,17 @@ export default function Sell() {
           price.ask || 0
         );
         if (response) {
-          window.alert("Sale confirmed. New cash balance is " +  formatCurrency(response.remainingCash));
-          window.location.assign("/positions");
+          window.alert(
+            "Sale confirmed. New cash balance is " +
+              formatCurrency(response.remainingCash)
+          );
+          window.location.assign("/");
         } else {
           window.alert("Sale failed: " + response);
         }
       } else alert("Sale cancelled");
     }
-
-  }
+  };
 
   useEffect(() => {
     getAssets().then((foundAssets) => {
@@ -79,73 +92,100 @@ export default function Sell() {
   useEffect(() => {
     if (asset) {
       setLoadingPrice(true);
+      setSharesToSell(0)
+
       getStockPrice(asset.stock.symbol).then((foundPrice) => {
-        console.log("Setting price to ", foundPrice);
         setPrice(foundPrice);
         setLoadingPrice(false);
       });
     }
   }, [asset]);
 
-  // items={[{ label: "apple" }, { label: "banana" }, { label: "pear" }]}
+  const formItemLayout = {
+    labelCol: {
+      span: 2,
+      offset: 0,
+    },
+    wrapperCol: {
+      span: 6,
+      offset: 1,
+    },
+  };
+  const tailLayout = {
+    wrapperCol: {
+      offset: 3,
+      span: 16,
+    },
+  }
 
-  // const getAssetArray:any[] = () => {
+  return (
+    <>
+      <Form name="sell" {...formItemLayout}>
+        <Form.Item label="Stock">
+          {assets && assets.length > 0 ? (
+            <>
+              <Select
+                onChange={handleAssetChange}
+                defaultValue={assets[0].stock.symbol}
+              >
+                {assets.map((currAsset) => {
+                  return (
+                    <Select.Option value={currAsset.stock.symbol}>
+                      {currAsset.stock.name +
+                        "  (" +
+                        currAsset.stock.symbol +
+                        ")"}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </>
+          ) : (
+            <label>...</label>
+          )}
+        </Form.Item>
 
-  //   return assets?.map((currAsset) => {
-  //     return {label:  "`currAsset.symbol`};
-  //   })
+        <Form.Item label="Current Bid Price">
+          <label> {loadingPrice ? "..." : formatCurrency(price.bid)}</label>
+        </Form.Item>
 
-  // }
+        <Form.Item label="Shares to Sell">
+          <Input
+            placeholder={asset ? "" + getShareCount(asset) + " shares of " + asset.stock.symbol + " available to sell" : "Enter number of shares to sell"}
+            onChange={handleSharesToSell}
+            value={sharesToSell == 0? undefined: sharesToSell}
+          ></Input>
+         
+        </Form.Item>
 
-  // if (assets && assets.length > 0)
-  //   setAsset(assets[0])
+        <Form.Item label="Commission">
+          <label>{formatCurrency(COMMISSION)}</label>
+        </Form.Item>
+
+        <Form.Item label = "Net Proceeds">
+          <label>
+        {loadingPrice
+          ? "..."
+          : sharesToSell > getShareCount(asset) 
+          ?
+          "You may sell a maximum of " + getShareCount(asset) + " shares of " + asset?.stock.name
+          : sharesToSell > 0
+          ? formatCurrency(price.ask * sharesToSell - COMMISSION)
+          : 0}
+          </label>
+        </Form.Item>
+        <Form.Item  {...tailLayout}>
+          <Button type="primary" onClick={handleSale} disabled={!asset || !price || sharesToSell<= 0 || sharesToSell > getShareCount(asset)}>
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
+  );
 
   return (
     <div>
-      <label> Stock </label>
-      <select name="asset" onChange={handleAssetChange}>
-        {assets?.map((currAsset) => {
-          return <option> {currAsset.stock.symbol} </option>;
-        })}
-      </select>
-
-      <label> {asset?.stock.name} </label>
-      <label>
-        {" "}
-        {"(" + getShareCount(asset) + " shares available to sell)"}{" "}
-      </label>
-      <br />
-
-      {/* <label> Test Stock  </label>
-
-      <Autocomplete
-        getItemValue={(item) => item.label}
-        items={[{ label: "stock 1" }, { label: "stock 2" }, { label: "stock 4" }]}
-        renderItem={(item, isHighlighted) => (
-          <div style={{ background: isHighlighted ? "lightgray" : "white" }}>
-            {item.label}
-          </div>
-        )}
-        value={assetName}
-        onChange={(e) => setAssetName(e.target.value)}
-        onSelect={(val) => setAssetName(val)}
-      />
-      <br /> */}
-
-      <label>Current Bid Price </label>
-      <label> ${loadingPrice ? "..." : price.bid}</label>
-      <br />
-
-      <label>Shares to sell </label>
-      <input type="number" onChange={handleSharesToSell} />
-      <br />
-
-      <label>Commission</label>
-      <label>
-        {" "}
-        ${loadingPrice ? "..." : sharesToSell > 0 ? COMMISSION : 0}{" "}
-      </label>
-      <br />
+     
 
       <label>Total Proceeds </label>
       <label>
