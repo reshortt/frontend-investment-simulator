@@ -2,7 +2,6 @@ import { format, isValid } from "date-fns";
 import { getStockPriceOnDate, getTransactions } from "./APIService";
 import {
   Asset,
-  HistoricalPrice,
   INITIAL_GIFT,
   Transaction,
   TransactionType,
@@ -107,33 +106,6 @@ export const formatDate = (date: Date, long:boolean): string => {
   return format(dateToFormat, formatStr);
 };
 
-// async function getStockPriceOnDate(
-//   symbol: string,
-//   date: Date
-// ): Promise<number> {
-//   let prices = priceMap.get(symbol);
-//   if (!prices || prices === undefined) {
-//     console.log ("Getting Price History for " + symbol + "...")
-//     prices = await getHistoricalPrices(symbol);
-//     priceMap.set(symbol, prices);
-//     console.log ("Finished getting Price History for ", symbol , ". Entries: ", prices.length)
-//   }
-
-//   let lastPrice: number = 0;
-//   let thisDate:Date = new Date(date)
-
-//   // brute force march from beginning to end
-//   for (let price of prices) {
-//     let priceDate:Date = new Date(price.date)
-
-//     if (priceDate > thisDate) {
-//         break
-//     } 
-//     lastPrice = price.price;
-//   }
-//   return lastPrice;
-// }
-
 
 function getTransactionsOnDate(
   transactions: Transaction[],
@@ -176,7 +148,7 @@ async function getPortfolioSnapshots(
       switch (transaction.type) {
         case TransactionType.BUY: {
           let shares: number | undefined = tickerMap.get(transaction.symbol);
-          if (shares != undefined) shares += transaction.shares;
+          if (shares !== undefined) shares += transaction.shares;
           else shares = transaction.shares;
           tickerMap.set(transaction.symbol, shares);
           cash -= transaction.amount;
@@ -188,7 +160,7 @@ async function getPortfolioSnapshots(
         }
         case TransactionType.SELL: {
           let shares: number | undefined = tickerMap.get(transaction.symbol);
-          if (shares != undefined) shares -= transaction.shares;
+          if (shares !== undefined) shares -= transaction.shares;
           else {
             console.log("******** Error - sold shares that were not owned");
             shares = 0;
@@ -208,7 +180,7 @@ async function getPortfolioSnapshots(
     let positions: Position[] = [];
 
     tickerMap.forEach((shares: number, tickerSymbol: string) => {
-      if (shares != undefined && shares > 0) {
+      if (shares !== undefined && shares > 0) {
         positions.push({ shares: shares, symbol: tickerSymbol });
       }
     });
@@ -242,12 +214,13 @@ export const getHistoricalValues = async (
   return values;
 };
 
+export const calcSharePrice = (transaction:Transaction):number => {
 
- // debug function only
- export const showHistoricalPrices = async () => {
-  const values:PortfolioValue[] = await getHistoricalValues (await getTransactions())
-  console.log("****************  Historical Values ***************************")
-  for (let value of values) {
-    console.log(value.date, ":  ", formatCurrency(value.value))   
+  if (transaction.type == TransactionType.BUY) {
+    return (transaction.amount - transaction.commission)/transaction.shares
   }
-};
+  else {
+    const perShare:number = (transaction.amount + transaction.commission)/transaction.shares
+    return perShare
+  }
+}

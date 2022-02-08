@@ -1,4 +1,4 @@
-import { Form } from "antd";
+import { Form, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { getUser, getUserInfo } from "../APIService";
 import {
@@ -29,22 +29,12 @@ function Overview() {
     });
   }, []);
 
-  const getAccountValueString = (user: User | undefined): string => {
-    if (loadingUser || loadingUserInfo) return "...";
-    if (!user) return "";
+  const getAccountValueString = (user: User): string => {
     return formatCurrency(getAccountValue(user));
   };
 
-  const getGainString = (user: User | undefined): string => {
-    if (loadingUser || loadingUserInfo) return "...";
-    if (!user) return "";
+  const getGainString = (user: User): string => {
     return formatCurrency(getGain(user));
-  };
-
-  const getUserID = (): string => {
-    if (loadingUserInfo || loadingUser || !userInfo) return "...";
-    console.log("email for ", userInfo.name, " is ", userInfo.email);
-    return userInfo.email;
   };
 
   const formItemLayout = {
@@ -54,7 +44,7 @@ function Overview() {
     },
     wrapperCol: {
       span: 36,
-      offset: 1
+      offset: 1,
     },
   };
 
@@ -63,52 +53,66 @@ function Overview() {
       <br />
       <Form name="overview" {...formItemLayout}>
         <Form.Item label="Name" labelAlign="right">
-          <span className="ant-form-text">
-            {userInfo && !loadingUserInfo && userInfo.name
-              ? userInfo.name
-              : "..."}
-          </span>
+          {loadingUserInfo || !userInfo ? (
+            <Spin size="small" />
+          ) : (
+            <label>{userInfo.name}</label>
+          )}
         </Form.Item>
 
         <Form.Item label="User ID" labelAlign="right">
           <span className="ant-form-text">
-            {userInfo && !loadingUserInfo && userInfo.email
-              ? userInfo.email
-              : "..."}
+            {userInfo && !loadingUserInfo && userInfo.email ? (
+              userInfo.email
+            ) : (
+              <Spin size="small" />
+            )}
           </span>
         </Form.Item>
 
         <Form.Item label="Account Created" labelAlign="right">
           <span className="ant-form-text">
-            {userInfo && !loadingUserInfo
-              ? formatDate(userInfo.created, true)
-              : "..."}
+            {userInfo && !loadingUserInfo ? (
+              formatDate(userInfo.created, true)
+            ) : (
+              <Spin size="small" />
+            )}
           </span>
         </Form.Item>
 
         <Form.Item label="Account Value" labelAlign="right">
-          <span className="ant-form-text">{getAccountValueString(user)}</span>
+          <span className="ant-form-text">
+            {!user || loadingUser ? (
+              <Spin size="small" />
+            ) : (
+              getAccountValueString(user)
+            )}
+          </span>
         </Form.Item>
 
         <Form.Item label="Cash Balance" labelAlign="right">
           <span className="ant-form-text">
-            {userInfo && !loadingUserInfo
-              ? formatCurrency(userInfo.cash)
-              : "..."}
+            {userInfo && !loadingUserInfo ? (
+              formatCurrency(userInfo.cash)
+            ) : (
+              <Spin size="small" />
+            )}
           </span>
         </Form.Item>
 
         <Form.Item label="Total Gain/Loss" labelAlign="right">
           <span className="ant-form-text">
-            <label
-              style={
-                user && !loadingUser && getGain(user) < 0
-                  ? { color: "red" }
-                  : { color: undefined }
-              }
-            >
-              {getGainString(user)}
-            </label>
+            {loadingUser || !user ? (
+              <Spin size="small" />
+            ) : (
+              <label
+                style={
+                  getGain(user) < 0 ? { color: "red" } : { color: undefined }
+                }
+              >
+                {getGainString(user)}
+              </label>
+            )}
           </span>
         </Form.Item>
       </Form>

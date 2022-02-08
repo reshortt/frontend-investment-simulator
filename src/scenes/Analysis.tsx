@@ -6,7 +6,7 @@ import {
   PortfolioValue,
 } from "../Calculations";
 import { Line, LineConfig } from "@ant-design/plots";
-import { Empty } from "antd";
+import { Empty, Spin } from "antd";
 
 type DateValue = { date: string; value: number };
 
@@ -72,10 +72,9 @@ function Analysis() {
   return (
     <div className="Analysis">
       <header className="Analysis-header">
-        {config == undefined ? (
+        {config === undefined ? (
           <div>
-            {" "}
-            <label> Calculating Historical Values... </label>{" "}
+            <Spin size = "default"/>
           </div>
         ) : config.data.length < 7 ? (
           <Empty description="History unavailable for accounts created within the last week"></Empty>

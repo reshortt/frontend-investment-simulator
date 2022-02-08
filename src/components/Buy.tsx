@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Spin } from "antd";
 import { ChangeEvent, useEffect, useState, useRef } from "react";
 import {
   buyAsset,
@@ -32,12 +32,10 @@ export default function Buy() {
   };
 
   const handleSharesToBuy = (e: ChangeEvent<HTMLInputElement>) => {
-    const typedValue:string =  e.target.value
-    const shares:number = Number.parseInt(typedValue)
-    if (shares)
-      setSharesToBuy(shares);
-    else
-      setSharesToBuy(0)
+    const typedValue: string = e.target.value;
+    const shares: number = Number.parseInt(typedValue);
+    if (shares) setSharesToBuy(shares);
+    else setSharesToBuy(0);
   };
 
   useEffect(() => {
@@ -161,30 +159,33 @@ export default function Buy() {
           placeholder="Enter stock ticker symbol"
           onChange={handleTickerSymbol}
         ></Input>
-        <label
-          style={
-            loadingStock
-              ? { color: undefined }
-              : !!typedSymbol && !!companyName
-              ? { color: undefined }
-              : { color: "red" }
-          }
-        >
-          {loadingStock
-            ? "..."
-            : !typedSymbol
-            ? ""
-            : companyName
-            ? companyName
-            : "Invalid ticker symbol"}{" "}
-        </label>
+        <>
+          {loadingStock ? (
+            <Spin size="small" />
+          ) : (
+            <label
+              style={
+                !!typedSymbol && !!companyName
+                  ? { color: undefined }
+                  : { color: "red" }
+              }
+            >
+              {!typedSymbol
+                ? ""
+                : companyName
+                ? companyName
+                : "Invalid ticker symbol"}
+            </label>
+          )}{" "}
+        </>
       </Form.Item>
 
       <Form.Item label="Current Ask Price">
-        <label>
-          {" "}
-          {loadingPrice ? "..." : askPrice ? formatCurrency(askPrice) : ""}
-        </label>
+        {loadingPrice || loadingStock ? (
+          <Spin size="small" />
+        ) : (
+          <label>{askPrice ? formatCurrency(askPrice) : "Please enter a valid ticker symbol"}</label>
+        )}
       </Form.Item>
 
       <Form.Item label="Shares to Buy">
@@ -200,22 +201,17 @@ export default function Buy() {
       </Form.Item>
 
       <Form.Item label="Total Cost">
-        <label
-          style={
-            totalCost > cash && !loadingStock && !loadingPrice
-              ? { color: "red" }
-              : { color: undefined }
-          }
-        >
-          {loadingStock || loadingPrice ?
-           "..." 
-          : 
-          sharesToBuy > 0 ? 
-           formatCurrency(totalCost) 
-           :
-           "Please enter the number of shares to buy"
-           }
-        </label>
+        {sharesToBuy > 0 && (loadingStock || loadingPrice) ? (
+          <Spin size="small" />
+        ) : (
+          <label
+            style={totalCost > cash ? { color: "red" } : { color: undefined }}
+          >
+            {sharesToBuy > 0
+              ? formatCurrency(totalCost)
+              : "Please enter the number of shares to buy"}
+          </label>
+        )}
       </Form.Item>
 
       <Form.Item {...tailLayout}>

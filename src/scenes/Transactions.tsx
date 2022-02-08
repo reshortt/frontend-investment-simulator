@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { getTransactions, getUser } from "../APIService";
 import { Transaction, TransactionType, User } from "../types";
-import { Table } from "antd";
-import { formatCurrency, formatDate } from "../Calculations";
+import { Spin, Table } from "antd";
+import { calcSharePrice, formatCurrency, formatDate } from "../Calculations";
 
 type TransactionRow = {
   date: string;
@@ -45,7 +45,8 @@ function Transactions() {
           transaction.name +
           " (" +
           transaction.symbol +
-          ")";
+          ") at " +
+          formatCurrency(calcSharePrice(transaction))
         break;
 
       case TransactionType.DIVIDEND:
@@ -64,11 +65,12 @@ function Transactions() {
         description =
           "Sell " +
           transaction.shares +
-          " of " +
-          transaction.name +
-          " (" +
+          " " +
           transaction.symbol +
-          ")";
+          " (" +
+          transaction.name +
+          ") at " +
+          formatCurrency(calcSharePrice(transaction))
         break;
       default:
         console.log("This is transaction type: " + transaction.type);
@@ -91,10 +93,7 @@ function Transactions() {
     <div className="Transactions">
       <header className="Transactions-header"></header>
       {data === undefined ? (
-        <div>
-          {" "}
-          <label> Retrieving Transactions... </label>{" "}
-        </div>
+        <Spin size = "default" />
       ) : (
         <Table dataSource={data} columns={columns} />
       )}

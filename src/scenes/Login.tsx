@@ -1,8 +1,4 @@
-import { Button, Checkbox, Form, Input } from "antd";
-import { ChangeEvent, useState } from "react";
-
-import { Link } from "react-router-dom";
-
+import { Button, Form, Input } from "antd";
 import { doLogin } from "../APIService";
 
 function Login() {

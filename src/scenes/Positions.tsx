@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getUser } from "../APIService";
 import { User } from "../types";
-import { Table } from "antd";
+import { Spin, Table } from "antd";
 import {
   formatCurrency,
   formatPercent,
@@ -37,14 +37,13 @@ function Positions() {
   }, []);
 
   const calcData = (user: User): PositionRow[] => {
-    console.log("calculating row data...");
     const data: PositionRow[] = [];
-    var totalBasis:number = 0
-    var totalGain:number = 0
+    var totalBasis: number = 0;
+    var totalGain: number = 0;
     for (var asset of user.assets) {
       //console.log("pushing asset = ", JSON.stringify(asset))
-      totalGain += getGainLoss(asset)
-      totalBasis += getCostBasis(asset)
+      totalGain += getGainLoss(asset);
+      totalBasis += getCostBasis(asset);
       data.push({
         name: asset.stock.name,
         symbol: asset.stock.symbol,
@@ -72,7 +71,6 @@ function Positions() {
       percentOfAccount: formatPercent(user.info.cash / getAccountValue(user)),
     });
 
-  
     return data;
   };
 
@@ -102,8 +100,7 @@ function Positions() {
       <header className="Overview-header">
         {data === undefined ? (
           <div>
-            {" "}
-            <label> Calculating Positions... </label>{" "}
+            <Spin size="default" />
           </div>
         ) : (
           <Table dataSource={data} columns={columns} />
