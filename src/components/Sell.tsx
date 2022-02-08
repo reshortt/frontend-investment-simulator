@@ -1,8 +1,6 @@
 import { Button, Form, Input, Select } from "antd";
 import { ChangeEvent, useEffect, useState } from "react";
-import Autocomplete from "react-autocomplete";
 import {
-  buyAsset,
   getAssets,
   getShareCount,
   getStockPrice,
@@ -183,6 +181,7 @@ export default function Sell() {
           : 0}
           </label>
         </Form.Item>
+        
         <Form.Item  {...tailLayout}>
           <Button type="primary" onClick={handleSale} disabled={!asset || !price || sharesToSell<= 0 || sharesToSell > getShareCount(asset)}>
             Submit

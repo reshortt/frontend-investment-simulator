@@ -1,3 +1,4 @@
+import { Button, Form, Input } from "antd";
 import { ChangeEvent, useEffect, useState, useRef } from "react";
 import {
   buyAsset,
@@ -6,7 +7,7 @@ import {
   getStockPrice,
   lookupTicker,
 } from "../APIService";
-import { formatCurrency } from "../Calculations";
+import { formatCurrency, getAccountValue } from "../Calculations";
 import { COMMISSION } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
@@ -31,7 +32,12 @@ export default function Buy() {
   };
 
   const handleSharesToBuy = (e: ChangeEvent<HTMLInputElement>) => {
-    setSharesToBuy(e.target.valueAsNumber | 0);
+    const typedValue:string =  e.target.value
+    const shares:number = Number.parseInt(typedValue)
+    if (shares)
+      setSharesToBuy(shares);
+    else
+      setSharesToBuy(0)
   };
 
   useEffect(() => {
@@ -49,16 +55,9 @@ export default function Buy() {
           setLoadingStock(false);
           setCompanyName(foundCompanyName);
           if (foundCompanyName) {
-            //console.log("3. loading -> ", true);
-            //setLoading(loading + 1);
-            //isLoading.current = true;
-            //setLoading(true);
             setLoadingPrice(true);
             getStockPrice(typedSymbol)
               .then((foundPrice) => {
-                //setLoading(false);
-                //isLoading.current = false;
-                //console.log("Setting price to ", foundPrice);
                 setLoadingPrice(false);
                 setAskPrice(foundPrice.ask);
               })
@@ -68,7 +67,6 @@ export default function Buy() {
           } else {
             setAskPrice(null);
           }
-          //isLoading.current = false
           setLoadingStock(false);
         }
       })
@@ -124,7 +122,7 @@ export default function Buy() {
                 "Purchase successful. New cash balance is " +
                   formatCurrency(remainingCash)
               );
-             window.location.assign("/transactions");
+              window.location.assign("/transactions");
               // console.log("showing historical prices *****************************************************")
             }
           },
@@ -139,49 +137,102 @@ export default function Buy() {
       window.alert("Purchase cancelled");
     }
   };
+  const formItemLayout = {
+    labelCol: {
+      span: 2,
+      offset: 0,
+    },
+    wrapperCol: {
+      span: 6,
+      offset: 1,
+    },
+  };
 
+  const tailLayout = {
+    wrapperCol: {
+      offset: 3,
+      span: 16,
+    },
+  };
   return (
-    <div>
-      <label> Stock </label>
-      <input type="text" onChange={handleTickerSymbol} />
-      <label
-        style={{
-          color: companyName === null && !loadingStock ? "red" : undefined,
-        }}
-      >
-        {" "}
-        {loadingStock ? "..." : getCompanyText()}{" "}
-      </label>
-      <br />
-      <label>Current Ask Price </label>
-      <label> {loadingStock || loadingPrice ? "..." : (askPrice? formatCurrency(askPrice) : formatCurrency(0)) || 0}</label>
-      <br />
+    <Form name="buy" {...formItemLayout}>
+      <Form.Item label="Stock">
+        <Input
+          placeholder="Enter stock ticker symbol"
+          onChange={handleTickerSymbol}
+        ></Input>
+        <label
+          style={
+            loadingStock
+              ? { color: undefined }
+              : !!typedSymbol && !!companyName
+              ? { color: undefined }
+              : { color: "red" }
+          }
+        >
+          {loadingStock
+            ? "..."
+            : !typedSymbol
+            ? ""
+            : companyName
+            ? companyName
+            : "Invalid ticker symbol"}{" "}
+        </label>
+      </Form.Item>
 
-      <label>Shares to buy </label>
-      <input type="number" onChange={handleSharesToBuy} />
-      <br />
+      <Form.Item label="Current Ask Price">
+        <label>
+          {" "}
+          {loadingPrice ? "..." : askPrice ? formatCurrency(askPrice) : ""}
+        </label>
+      </Form.Item>
 
-      <label>Share cost </label>
-      <label> {loadingStock || loadingPrice ? "..." : formatCurrency(shareCost)} </label>
-      <br />
+      <Form.Item label="Shares to Buy">
+        <Input
+          placeholder={"Enter number of shares to buy"}
+          onChange={handleSharesToBuy}
+          value={sharesToBuy == 0 ? undefined : sharesToBuy}
+        ></Input>
+      </Form.Item>
 
-      <label> Commission </label>
-      <label>
-        {" "}
-        {loadingStock || loadingPrice
-          ? "..."
-          : shareCost > 0
-          ? formatCurrency(COMMISSION)
-          : 0}{" "}
-      </label>
-      <br />
+      <Form.Item label="Commission">
+        <label>{formatCurrency(COMMISSION)}</label>
+      </Form.Item>
 
-      <label>Total Cost </label>
-      <label> {loadingStock || loadingPrice ? "..." : formatCurrency(totalCost)} </label>
-      <br />
+      <Form.Item label="Total Cost">
+        <label
+          style={
+            totalCost > cash && !loadingStock && !loadingPrice
+              ? { color: "red" }
+              : { color: undefined }
+          }
+        >
+          {loadingStock || loadingPrice ?
+           "..." 
+          : 
+          sharesToBuy > 0 ? 
+           formatCurrency(totalCost) 
+           :
+           "Please enter the number of shares to buy"
+           }
+        </label>
+      </Form.Item>
 
-      <button onClick={handlePurchase}>Buy</button>
-    </div>
+      <Form.Item {...tailLayout}>
+        <Button
+          type="primary"
+          onClick={handlePurchase}
+          disabled={
+            sharesToBuy == 0 ||
+            loadingPrice ||
+            loadingStock ||
+            !companyName ||
+            totalCost > cash
+          }
+        >
+          Submit
+        </Button>
+      </Form.Item>
+    </Form>
   );
 }
-
