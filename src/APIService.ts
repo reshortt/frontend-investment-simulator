@@ -32,17 +32,18 @@ export const doLogin = async (
 
   switch (response.status) {
     case 200:
-      const responseObj = await response.json();
+    const responseObj = await response.json();
       sessionStorage.setItem(AUTH_TOKEN_KEY, responseObj.token);
       console.log("Successful login: " + responseObj);
       // TODO log someone in, make it available everywhere
 
-      window.location.assign("/overview");
+      window.location.assign("/");
       return true;
 
     case 401:
+    case 400:
       // todo: better way to show error
-      console.log(await response.json());
+      console.log("unsuccessful login for user " + email);
       return false;
 
     default:

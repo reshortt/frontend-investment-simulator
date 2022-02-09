@@ -4,7 +4,12 @@ import { doLogin } from "../APIService";
 function Login() {
 
   const onFinish = (values: any) => {
-    doLogin(values.username, values.password)
+    doLogin(values.username, values.password).then((success:boolean) => {
+      if (success)
+        window.alert("Succcesful login for user " + values.username)
+      else
+        window.alert("Invalid credentials");
+    })
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -37,7 +42,7 @@ function Login() {
         rules={[
           {
             required: true,
-            message: "Please input your username!",
+            message: "Please input your username",
           },
         ]}
       >
