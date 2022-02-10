@@ -1,21 +1,19 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 
 import fetch from "node-fetch";
+import { Button, Form, Input } from "antd";
 
 function SignUp() {
-  const [typedPassword, setTypedPassword] = useState("");
-  const [typedEmail, setTypedEmail] = useState("");
-  const [typedName, setTypedName] = useState("");
 
-  const handleSignUpButtonClick = () => {
+  const handleSignUpButtonClick = (values:any) => {
     const fetchData = async () => {
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: typedEmail,
-          password: typedPassword,
-          name: typedName,
+          email: values.userID,
+          password: values.password,
+          name: values.name,
         }),
       };
       const response = await fetch(
@@ -31,7 +29,7 @@ function SignUp() {
         console.log(
           "json response of successful add is " + JSON.stringify(json)
         );
-        window.alert("Welcome, " + typedName + ". Your account was successfully created.")
+        window.alert("Welcome, " + values.name + ". Your account was successfully created.")
       }
       else {
         window.alert ("Signup failed: " + JSON.stringify(json))
@@ -40,36 +38,75 @@ function SignUp() {
     fetchData();
   };
 
-  const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
-    switch (e.target.name) {
-      case "typedPassword":
-        setTypedPassword(e.target.value);
-        break;
-      case "typedEmail":
-        setTypedEmail(e.target.value);
-        break;
-      case "typedName":
-        setTypedName(e.target.value);
-        break;
-    }
+  const formItemLayout = {
+    labelCol: {
+      span: 2,
+      offset: 0,
+    },
+    wrapperCol: {
+      span: 10,
+      offset: 1,
+    },
   };
 
   return (
-    <div className="SignUp">
-      <label> Name </label>
-      <input name="typedName" onChange={handleUserInput} />
-      <br />
-      <label> Email </label>
-      <input name="typedEmail" onChange={handleUserInput} />
-      <br />
-      <label> Password </label>
-      <input name="typedPassword" onChange={handleUserInput} />
-      <br />
-      <button onClick={handleSignUpButtonClick}>Create Account</button>
-      <br />
-      <header className="SignUp-header"></header>
-    </div>
-  );
+    <Form 
+    name="signup" {...formItemLayout}
+    onFinish={handleSignUpButtonClick}
+    >
+            <Form.Item
+        label="Name"
+        name="name"
+        rules={[
+          {
+            required: true,
+            message: "Please input your name",
+          },
+        ]}
+      >
+        <Input placeholder="Fred Smith" />
+      </Form.Item>
+       <Form.Item
+        label="User ID"
+        name="userID"
+        rules={[
+          {
+            required: true,
+            message: "Please input your user ID",
+          },
+        ]}
+      >
+        <Input placeholder="stock-market-whiz"/>
+      </Form.Item>
+
+
+      <Form.Item
+        label="Password"
+        name="password"
+        rules={[
+          {
+            required: true,
+            message: "Please input your password",
+          },
+        ]}
+      >
+        <Input.Password autoComplete="new-password"/>
+      </Form.Item>
+      <Form.Item
+        wrapperCol={{
+          offset: 8,
+          span: 3,
+        }}
+      >
+        <Button type="primary" htmlType="submit">
+          Sign Up
+        </Button>
+      </Form.Item>
+    </Form>
+
+
+    
+  )
 }
 
 export default SignUp;
