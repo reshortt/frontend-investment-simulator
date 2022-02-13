@@ -1,9 +1,7 @@
 import { Divider, Form, Select } from "antd";
-import { ChangeEvent, useEffect, useState } from "react";
-import { getUser } from "../APIService";
+import { useState } from "react";
 import Buy from "../components/Buy";
 import Sell from "../components/Sell";
-import { Asset, User } from "../types";
 
 enum TradeType {
   BUY = "BUY",

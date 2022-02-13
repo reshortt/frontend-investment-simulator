@@ -1,5 +1,12 @@
 import { AUTH_TOKEN_KEY } from "./constants";
-import { Asset, HistoricalPrice, StockPrices, Transaction, User, UserInfo } from "./types";
+import {
+  Asset,
+  Dividend,
+  StockPrices,
+  Transaction,
+  User,
+  UserInfo,
+} from "./types";
 import fetch, { RequestInit } from "node-fetch";
 
 const createRequestAuthorization = (methodType = "GET"): RequestInit => {
@@ -15,9 +22,9 @@ export const isLoggedIn = (): boolean =>
   !!sessionStorage.getItem(AUTH_TOKEN_KEY);
 
 export const doLogout = () => {
-  sessionStorage.removeItem(AUTH_TOKEN_KEY)
-  window.location.assign("/login")
-}
+  sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  window.location.assign("/login");
+};
 
 export const doLogin = async (
   email: string,
@@ -32,7 +39,7 @@ export const doLogin = async (
 
   switch (response.status) {
     case 200:
-    const responseObj = await response.json();
+      const responseObj = await response.json();
       sessionStorage.setItem(AUTH_TOKEN_KEY, responseObj.token);
       console.log("Successful login: " + responseObj);
       // TODO log someone in, make it available everywhere
@@ -62,8 +69,8 @@ export const getUser = async (): Promise<User | null> => {
 
   switch (response.status) {
     case 200:
-      const userResponseObj = await response.json();
-      return userResponseObj;
+      const user:User = await response.json();
+      return user;
 
     case 401:
       // todo: better way to show error
@@ -243,43 +250,67 @@ export const lookupTicker = async (
   }
 };
 
+export async function getHistoricalDividends(
+  symbol: string
+): Promise<Dividend[]> {
+  const requestOptions = createRequestAuthorization();
 
+  const queryParams = new URLSearchParams({ ticker: symbol });
+
+  const queryURL = new URL("http://localhost:3005/API/getHistoricalDividends");
+  queryURL.search = queryParams.toString();
+
+  const response = await fetch(queryURL, requestOptions);
+
+  switch (response.status) {
+    case 200: {
+      return await response.json();
+    }
+
+    default:
+      // 500 is possible for critical server erropr
+      console.log("unexpected getDividends response");
+      return [];
+  }
+}
 
 export async function getStockPriceOnDate(
   symbol: string,
   date: Date
-): Promise<number> { 
+): Promise<number> {
   const requestOptions = createRequestAuthorization();
 
-  const queryParams = new URLSearchParams ( {
-    ticker:symbol,
-    date: date.toDateString()
-  }
-  ) 
+  const queryParams = new URLSearchParams({
+    ticker: symbol,
+    date: date.toDateString(),
+  });
   const queryURL = new URL("http://localhost:3005/API/getStockPriceOnDate");
-  queryURL.search = queryParams.toString()
+  queryURL.search = queryParams.toString();
 
   const response = await fetch(queryURL, requestOptions);
   switch (response.status) {
     case 200: {
-      const responseObj =  await response.json()
+      const responseObj = await response.json();
 
-      return responseObj.price
+      return responseObj.price;
     }
 
     default:
       // 500 is possible for critical server erropr
       console.log("unexpected buyAsset response");
-      return 0
+      return 0;
   }
-
 }
 export type BuyAssetResponse = {
-  successful:boolean;
-  remainingCash:number;
-}
+  successful: boolean;
+  remainingCash: number;
+};
 
-export const buyAsset = async (symbol: string, shares: number, price:number): Promise<BuyAssetResponse> => {
+export const buyAsset = async (
+  symbol: string,
+  shares: number,
+  price: number
+): Promise<BuyAssetResponse> => {
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
@@ -289,7 +320,7 @@ export const buyAsset = async (symbol: string, shares: number, price:number): Pr
   const buySharesQueryParams = new URLSearchParams({
     tickerSymbol: symbol,
     shares: sharesString,
-    price:priceString
+    price: priceString,
   });
   buySharesURL.search = buySharesQueryParams.toString();
 
@@ -299,47 +330,26 @@ export const buyAsset = async (symbol: string, shares: number, price:number): Pr
     case 200: {
       const userResponseObj = await response.json();
       const cashRemainingAfterPurchase: number = userResponseObj.cash;
-      return {successful: true, remainingCash: cashRemainingAfterPurchase};
+      return { successful: true, remainingCash: cashRemainingAfterPurchase };
     }
 
     default:
       // 500 is possible for critical server erropr
       console.log("unexpected buyAsset response");
-      return { successful: false, remainingCash:0 };
+      return { successful: false, remainingCash: 0 };
   }
 };
 
 export type SellAssetResponse = {
-  successful:boolean;
-  remainingCash?:number;
-}
+  successful: boolean;
+  remainingCash?: number;
+};
 
-export const getHistoricalPrices = async (symbol:string):Promise<HistoricalPrice[]> => {
-  const requestOptions = createRequestAuthorization();
-  const url = new URL("http://localhost:3005/API/getHistoricalPrices");
-  const params = new URLSearchParams({
-    tickerSymbol: symbol
-  });
-  url.search = params.toString()
-
-  console.log("*** Fetch request made: ", url)
-  const response = await fetch (url, requestOptions)
-  console.log("***Response received***")
-
-  switch (response.status) {
-    case 200: {
-      return await response.json();
-    }
-
-    default:
-      // 500 is possible for critical server erropr
-      console.log("unexpected getHistoricalPrices response");
-      const empty:HistoricalPrice[] = [];
-      return empty;
-  }
-}
-
-export const sellAsset = async (symbol: string, shares: number, price:number) => {
+export const sellAsset = async (
+  symbol: string,
+  shares: number,
+  price: number
+) => {
   const requestOptions = createRequestAuthorization();
 
   const sharesString: string = shares.toString();
@@ -348,7 +358,7 @@ export const sellAsset = async (symbol: string, shares: number, price:number) =>
   const sellAssetQueryParams = new URLSearchParams({
     tickerSymbol: symbol,
     shares: sharesString,
-    price:priceString
+    price: priceString,
   });
   sellAssetURL.search = sellAssetQueryParams.toString();
 
@@ -360,7 +370,7 @@ export const sellAsset = async (symbol: string, shares: number, price:number) =>
     case 200: {
       const userResponseObj = await response.json();
       const cashRemainingAfterPurchase: number = userResponseObj.cash;
-      return {successful: true, remainingCash: cashRemainingAfterPurchase};
+      return { successful: true, remainingCash: cashRemainingAfterPurchase };
     }
 
     default:
@@ -404,18 +414,21 @@ export const getStockPrice = async (
   }
 };
 
-export const getShareCount = ((asset:Asset|null|undefined):number => {
+export const getShareCount = (asset: Asset | null | undefined): number => {
+  console.log(
+    "get Share count for ",
+    asset?.stock?.symbol,
+    " with ",
+    asset?.lots
+  );
 
-  console.log("get Share count for ", asset?.stock?.symbol, " with ", asset?.lots)
-
-  var totalCount:number = 0
-  if (!asset)
-    return  0
+  var totalCount: number = 0;
+  if (!asset) return 0;
 
   asset.lots.map((currLot) => {
-    totalCount += currLot.shares
-  })
+    totalCount += currLot.shares;
+  });
 
-  console.log (" ---> share count = ", totalCount)
-  return totalCount
-})
+  console.log(" ---> share count = ", totalCount);
+  return totalCount;
+};
