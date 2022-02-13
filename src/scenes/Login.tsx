@@ -1,15 +1,23 @@
-import { Button, Form, Input } from "antd";
-import { doLogin } from "../APIService";
+import { Button, Form, Input, Spin } from "antd";
+import { useEffect, useState } from "react";
+import { doLogin, getTransactions, isLoggedIn } from "../APIService";
 
 function Login() {
+  const [loggingIn, setLoggingIn] = useState<boolean>(false);
+
+  // useEffect(() => {
+  //   getTransactions().then((transactions) => {
+  //     setData(calcData(transactions));
+  //   });
+  // }, []);
 
   const onFinish = (values: any) => {
-    doLogin(values.username, values.password).then((success:boolean) => {
-      if (success)
-        window.alert("Succcesful login for user " + values.username)
-      else
-        window.alert("Invalid credentials");
-    })
+    setLoggingIn(true);
+    doLogin(values.username, values.password).then((success: boolean) => {
+      setLoggingIn(false);
+      if (!success) 
+         window.alert("Invalid credentials");
+    });
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -17,8 +25,8 @@ function Login() {
   };
 
   const onSignUp = () => {
-    window.location.assign("/signup")
-  }
+    window.location.assign("/signup");
+  };
 
   return (
     <Form
@@ -68,9 +76,13 @@ function Login() {
           span: 16,
         }}
       >
-        <Button type="primary" htmlType="submit">
-          Login
-        </Button>
+        {loggingIn || isLoggedIn() ? (
+          <Spin size="small" />
+        ) : (
+          <Button type="primary" htmlType="submit">
+            Login
+          </Button>
+        )}
       </Form.Item>
 
       <Form.Item
@@ -80,11 +92,11 @@ function Login() {
         }}
       >
         <label>No Account? </label>
-        <Button type = "link" onClick={onSignUp}>
+
+        <Button type="link" onClick={onSignUp}>
           Sign Up
         </Button>
       </Form.Item>
-
     </Form>
   );
 

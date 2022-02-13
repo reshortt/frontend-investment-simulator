@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTransactions, getUser } from "../APIService";
+import { getTransactions } from "../APIService";
 import { Transaction, TransactionType, User } from "../types";
 import { Spin, Table } from "antd";
 import { calcSharePrice, formatCurrency, formatDate } from "../Calculations";
@@ -51,7 +51,9 @@ function Transactions() {
 
       case TransactionType.DIVIDEND:
         description =
-          "Dividend Received from " +
+          "Dividend on " +
+          transaction.shares +
+          " shares of " +
           transaction.name +
           " (" +
           transaction.symbol +

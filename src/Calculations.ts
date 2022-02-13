@@ -1,13 +1,13 @@
 import { format, isValid } from "date-fns";
-import { getStockPriceOnDate, getTransactions } from "./APIService";
+import { getStockPriceOnDate } from "./APIService";
 import {
   Asset,
+  Dividend,
   INITIAL_GIFT,
   Transaction,
   TransactionType,
   User,
 } from "./types";
-
 
 type Position = {
   symbol: string;
@@ -98,14 +98,13 @@ export const formatPercent = (percent: number): string => {
   );
 };
 
-export const formatDate = (date: Date, long:boolean): string => {
+export const formatDate = (date: Date, long: boolean): string => {
   var dateToFormat: Date = new Date(date);
   if (!isValid(dateToFormat)) return "";
-  const formatStr = long? "MMMM dd, yyyy" : "yyyy-MM-dd"
+  const formatStr = long ? "MMMM dd, yyyy" : "yyyy-MM-dd";
 
   return format(dateToFormat, formatStr);
 };
-
 
 function getTransactionsOnDate(
   transactions: Transaction[],
@@ -130,9 +129,9 @@ async function getPortfolioSnapshots(
 
   let snapshots: PortfolioSnapshot[] = [];
   let cash: number = 0;
-  const startDate:Date = new Date(transactions[0].date)
+  const startDate: Date = new Date(transactions[0].date);
   const endDate: Date = new Date(Date.now());
-  endDate.setDate(endDate.getDate() - 2)
+  endDate.setDate(endDate.getDate() - 2);
 
   for (
     let date: Date = startDate;
@@ -201,26 +200,28 @@ export const getHistoricalValues = async (
   );
   for (let snapshot of snapshots) {
     let value: number = 0;
-    const snapshotDate:Date = new Date(snapshot.date)
+    const snapshotDate: Date = new Date(snapshot.date);
 
     for (let position of snapshot.positions) {
-      const price:number = await getStockPriceOnDate(position.symbol, snapshotDate)
-      value += position.shares * price
+      const price: number = await getStockPriceOnDate(
+        position.symbol,
+        snapshotDate
+      );
+      value += position.shares * price;
     }
     value += snapshot.cash;
     values.push({ date: snapshotDate, value: value });
-
   }
   return values;
 };
 
-export const calcSharePrice = (transaction:Transaction):number => {
-
+export const calcSharePrice = (transaction: Transaction): number => {
   if (transaction.type == TransactionType.BUY) {
-    return (transaction.amount - transaction.commission)/transaction.shares
+    return (transaction.amount - transaction.commission) / transaction.shares;
+  } else {
+    const perShare: number =
+      (transaction.amount + transaction.commission) / transaction.shares;
+    return perShare;
   }
-  else {
-    const perShare:number = (transaction.amount + transaction.commission)/transaction.shares
-    return perShare
-  }
-}
+};
+
