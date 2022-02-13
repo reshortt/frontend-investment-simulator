@@ -6,7 +6,7 @@ import {
   INITIAL_GIFT,
   Transaction,
   TransactionType,
-  User,
+  Account,
 } from "./types";
 
 type Position = {
@@ -49,11 +49,11 @@ export const getAssetValue = (asset: Asset): number => {
   );
 };
 
-export const getGain = (user: User): number => {
+export const getGain = (user: Account): number => {
   return getAccountValue(user) - INITIAL_GIFT;
 };
 
-export const getAccountValue = (user: User): number => {
+export const getAccountValue = (user: Account): number => {
   var total: number = 0;
   for (var asset of user.assets) {
     total += getAssetValue(asset);
@@ -61,7 +61,7 @@ export const getAccountValue = (user: User): number => {
   return total + user.info.cash;
 };
 
-export const getPercentOfAccount = (user: User, asset: Asset): number => {
+export const getPercentOfAccount = (user: Account, asset: Asset): number => {
   return getAssetValue(asset) / getAccountValue(user);
 };
 
@@ -69,7 +69,7 @@ export const getGainLoss = (asset: Asset): number => {
   return getAssetValue(asset) - getCostBasis(asset);
 };
 
-export const getCash = (user: User): number => {
+export const getCash = (user: Account): number => {
   return user.info.cash;
 };
 

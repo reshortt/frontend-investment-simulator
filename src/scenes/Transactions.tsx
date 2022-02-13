@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTransactions } from "../APIService";
-import { Transaction, TransactionType, User } from "../types";
+import { Transaction, TransactionType, Account } from "../types";
 import { Spin, Table } from "antd";
 import { calcSharePrice, formatCurrency, formatDate } from "../Calculations";
 

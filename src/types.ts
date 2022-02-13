@@ -6,10 +6,10 @@ export type Asset = {
 export type Stock = {
   name: string;
   symbol: string;
-  price: StockPrices;
+  price: SpotPrice;
 }
 
-export type StockPrices = {
+export type SpotPrice = {
   bid: number;
   ask: number;
   previousClose: number;
@@ -26,7 +26,7 @@ export type UserInfo = {
   cash: number;
   created: Date;
 }
-export type User = {
+export type Account = {
   info:UserInfo;
   transactions: Transaction[];
   assets: Asset[];
@@ -42,13 +42,16 @@ export type Transaction = {
   name:string;
   cash:number;
   commission:number;
+  from:number,
+  to:number
 };
 
 export enum TransactionType {
   GIFT = "GIFT",
   BUY="BUY",
   SELL="SELL",
-  DIVIDEND="DIVIDEND"
+  DIVIDEND="DIVIDEND",
+  SPLIT="SPLIT"
 }
 
 export const COMMISSION: number = 15.0;

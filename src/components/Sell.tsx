@@ -7,14 +7,14 @@ import {
   sellAsset,
 } from "../APIService";
 import { formatCurrency } from "../Calculations";
-import { Asset, COMMISSION, StockPrices } from "../types";
+import { Asset, COMMISSION, SpotPrice } from "../types";
 
 export default function Sell() {
   const [assets, setAssets] = useState<Asset[] | undefined>(undefined);
   const [loadingAssets, setLoadingAssets] = useState<boolean>(false);
   const [asset, setAsset] = useState<Asset | undefined>(undefined);
   const [sharesToSell, setSharesToSell] = useState(0);
-  const [price, setPrice] = useState<StockPrices>({
+  const [price, setPrice] = useState<SpotPrice>({
     bid: 0,
     ask: 0,
     previousClose: 0,
