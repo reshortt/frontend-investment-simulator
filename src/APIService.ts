@@ -2,9 +2,9 @@ import { AUTH_TOKEN_KEY } from "./constants";
 import {
   Asset,
   Dividend,
-  StockPrices,
+  SpotPrice,
   Transaction,
-  User,
+  Account,
   UserInfo,
 } from "./types";
 import fetch, { RequestInit } from "node-fetch";
@@ -60,17 +60,17 @@ export const doLogin = async (
   }
 };
 
-export const getUser = async (): Promise<User | null> => {
+export const getAccount = async (): Promise<Account | null> => {
   const requestOptions = createRequestAuthorization();
   const response = await fetch(
-    "http://localhost:3005/API/getUser",
+    "http://localhost:3005/API/getAccount",
     requestOptions
   );
 
   switch (response.status) {
     case 200:
-      const user:User = await response.json();
-      return user;
+      const account:Account = await response.json();
+      return account;
 
     case 401:
       // todo: better way to show error
@@ -79,7 +79,7 @@ export const getUser = async (): Promise<User | null> => {
 
     default:
       // 500 is possible for critical server erropr
-      console.log("unexpected getUser response");
+      console.log("unexpected getAccount response");
       return null;
   }
 };
@@ -382,7 +382,7 @@ export const sellAsset = async (
 
 export const getStockPrice = async (
   tickerSymbol: string
-): Promise<StockPrices> => {
+): Promise<SpotPrice> => {
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 

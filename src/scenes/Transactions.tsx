@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTransactions } from "../APIService";
-import { Transaction, TransactionType, User } from "../types";
+import { Transaction, TransactionType, Account } from "../types";
 import { Spin, Table } from "antd";
 import { calcSharePrice, formatCurrency, formatDate } from "../Calculations";
 
@@ -26,7 +26,7 @@ function Transactions() {
       rows.push({
         date: formatDate(transaction.date, true),
         description: createDescription(transaction),
-        amount: formatCurrency(transaction.amount),
+        amount: transaction.amount? formatCurrency(transaction.amount) : formatCurrency(0),
         cash: formatCurrency(transaction.cash),
       });
     }
@@ -73,6 +73,9 @@ function Transactions() {
           transaction.name +
           ") at " +
           formatCurrency(calcSharePrice(transaction))
+        break;
+      case TransactionType.SPLIT:
+        description = transaction.symbol + " " + transaction.to + "-for-" + transaction.from + " Stock Split"
         break;
       default:
         console.log("This is transaction type: " + transaction.type);

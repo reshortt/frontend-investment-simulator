@@ -1,40 +1,40 @@
 import { Form, Spin } from "antd";
 import { useEffect, useState } from "react";
-import { getUser, getUserInfo } from "../APIService";
+import { getAccount, getUserInfo } from "../APIService";
 import {
   formatCurrency,
   formatDate,
   getAccountValue,
   getGain,
 } from "../Calculations";
-import { User, UserInfo } from "../types";
+import { Account, UserInfo } from "../types";
 import "antd/dist/antd.css";
 
 function Overview() {
-  const [user, setUser] = useState<User>();
+  const [account, setAccount] = useState<Account>();
   const [userInfo, setUserInfo] = useState<UserInfo>();
-  const [loadingUser, setLoadingUser] = useState<boolean>(false);
-  const [loadingUserInfo, setLoadingUserInfo] = useState<boolean>(false);
+  const [loadingAccount, setLoadingUser] = useState<boolean>(false);
+  const [loadingUserInfo, setLoadingAccount] = useState<boolean>(false);
 
   useEffect(() => {
-    setLoadingUserInfo(true);
+    setLoadingAccount(true);
     getUserInfo().then((foundUserInfo) => {
       foundUserInfo && setUserInfo(foundUserInfo);
-      setLoadingUserInfo(false);
+      setLoadingAccount(false);
       setLoadingUser(true);
-      getUser().then((foundUser) => {
-        foundUser && setUser(foundUser);
+      getAccount().then((foundUser) => {
+        foundUser && setAccount(foundUser);
         setLoadingUser(false);
       });
     });
   }, []);
 
-  const getAccountValueString = (user: User): string => {
-    return formatCurrency(getAccountValue(user));
+  const getAccountValueString = (account: Account): string => {
+    return formatCurrency(getAccountValue(account));
   };
 
-  const getGainString = (user: User): string => {
-    return formatCurrency(getGain(user));
+  const getGainString = (account: Account): string => {
+    return formatCurrency(getGain(account));
   };
 
   const formItemLayout = {
@@ -82,10 +82,10 @@ function Overview() {
 
         <Form.Item label="Account Value" labelAlign="right">
           <span className="ant-form-text">
-            {!user || loadingUser ? (
+            {!account || loadingAccount ? (
               <Spin size="small" />
             ) : (
-              getAccountValueString(user)
+              getAccountValueString(account)
             )}
           </span>
         </Form.Item>
@@ -102,15 +102,15 @@ function Overview() {
 
         <Form.Item label="Total Gain/Loss" labelAlign="right">
           <span className="ant-form-text">
-            {loadingUser || !user ? (
+            {loadingAccount || !account ? (
               <Spin size="small" />
             ) : (
               <label
                 style={
-                  getGain(user) < 0 ? { color: "red" } : { color: undefined }
+                  getGain(account) < 0 ? { color: "red" } : { color: undefined }
                 }
               >
-                {getGainString(user)}
+                {getGainString(account)}
               </label>
             )}
           </span>

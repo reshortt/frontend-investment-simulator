@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getUser } from "../APIService";
-import { User } from "../types";
+import { getAccount } from "../APIService";
+import { Account } from "../types";
 import { Spin, Table } from "antd";
 import {
   formatCurrency,
@@ -29,14 +29,14 @@ function Positions() {
   const [data, setData] = useState<PositionRow[] | undefined>();
 
   useEffect(() => {
-    getUser().then((foundUser) => {
+    getAccount().then((foundUser) => {
       if (foundUser) {
         setData(calcData(foundUser));
       }
     });
   }, []);
 
-  const calcData = (user: User): PositionRow[] => {
+  const calcData = (user: Account): PositionRow[] => {
     const data: PositionRow[] = [];
     var totalBasis: number = 0;
     var totalGain: number = 0;
