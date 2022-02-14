@@ -122,6 +122,21 @@ function getTransactionsOnDate(
   return dateTransactions;
 }
 
+function adjustForSplits(
+  buyOrSell: Transaction,
+  transactions: Transaction[]
+): number {
+  let shares: number = buyOrSell.shares;
+  for (let transaction of transactions) {
+    if (transaction.type == TransactionType.SPLIT) {
+      if (transaction.date > buyOrSell.date) {
+        shares = shares * (transaction.to / transaction.from);
+      }
+    }
+  }
+  return shares;
+}
+
 async function getPortfolioSnapshots(
   transactions: Transaction[]
 ): Promise<PortfolioSnapshot[]> {
@@ -147,8 +162,9 @@ async function getPortfolioSnapshots(
       switch (transaction.type) {
         case TransactionType.BUY: {
           let shares: number | undefined = tickerMap.get(transaction.symbol);
-          if (shares !== undefined) shares += transaction.shares;
-          else shares = transaction.shares;
+          const adjustedShares = adjustForSplits(transaction, transactions);
+          if (shares !== undefined) shares += adjustedShares;
+          else shares = adjustedShares;
           tickerMap.set(transaction.symbol, shares);
           cash -= transaction.amount;
           break;
@@ -159,7 +175,8 @@ async function getPortfolioSnapshots(
         }
         case TransactionType.SELL: {
           let shares: number | undefined = tickerMap.get(transaction.symbol);
-          if (shares !== undefined) shares -= transaction.shares;
+          const adjustedShares = adjustForSplits(transaction, transactions);
+          if (shares !== undefined) shares -= adjustedShares;
           else {
             console.log("******** Error - sold shares that were not owned");
             shares = 0;
@@ -224,4 +241,3 @@ export const calcSharePrice = (transaction: Transaction): number => {
     return perShare;
   }
 };
-

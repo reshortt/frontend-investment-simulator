@@ -16,8 +16,14 @@ export type SpotPrice = {
 };
 export type HistoricalPrice = { date: Date; price: number };
 
+export type HistoricalData = {prices:HistoricalPrice[], dividends:Dividend[], splits:Split[]}
+
 export type Dividend = {
-    date: Date; price: number
+    date: Date; amount: number
+}
+
+export type Split = {
+  date:Date, from:number, to:number
 }
 
 export type UserInfo = {
