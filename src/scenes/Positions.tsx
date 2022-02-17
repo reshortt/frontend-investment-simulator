@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAccount } from "../APIService";
 import { Account } from "../types";
-import { Spin, Table } from "antd";
+import { Spin, Table, TablePaginationConfig } from "antd";
 import {
   formatCurrency,
   formatPercent,
@@ -95,6 +95,11 @@ function Positions() {
     { title: "Total Gain/Loss", dataIndex: "gain", key: "gain" },
   ];
 
+
+  const tablePaginationConfig:TablePaginationConfig = {
+    pageSize : 100
+  }
+  
   return (
     <div className="Positions">
       <header className="Overview-header">
@@ -103,7 +108,7 @@ function Positions() {
             <Spin size="default" />
           </div>
         ) : (
-          <Table dataSource={data} columns={columns} />
+          <Table dataSource={data} columns={columns} pagination={tablePaginationConfig}/>
         )}
       </header>
     </div>

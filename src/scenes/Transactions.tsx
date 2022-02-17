@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getTransactions } from "../APIService";
 import { Transaction, TransactionType, Account } from "../types";
-import { Spin, Table } from "antd";
+import { Spin, Table, TablePaginationConfig } from "antd";
 import { calcSharePrice, formatCurrency, formatDate } from "../Calculations";
 
 type TransactionRow = {
@@ -94,13 +94,21 @@ function Transactions() {
     { title: "Cash Balance", dataIndex: "cash", key: "cash" },
   ];
 
+  const tablePaginationConfig:TablePaginationConfig = {
+    pageSize : 100
+  }
+
   return (
     <div className="Transactions">
       <header className="Transactions-header"></header>
       {data === undefined ? (
         <Spin size = "default" />
       ) : (
-        <Table dataSource={data} columns={columns} />
+        <Table 
+        dataSource={data} 
+        columns={columns} 
+        pagination={tablePaginationConfig}
+        />
       )}
     </div>
   );
