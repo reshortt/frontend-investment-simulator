@@ -2,40 +2,24 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 
 import fetch from "node-fetch";
 import { Button, Form, Input } from "antd";
+import { doSignup } from "../APIService";
 
 function SignUp() {
-
-  const handleSignUpButtonClick = (values:any) => {
-    const fetchData = async () => {
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: values.userID,
-          password: values.password,
-          name: values.name,
-        }),
-      };
-      const response = await fetch(
-        "http://localhost:3005/signup",
-        requestOptions
-      );
-
-      const status: number = response.status;
-      const json: string = await response.json();
-
-      if (status === 200) {
-        window.location.assign("/login")
-        console.log(
-          "json response of successful add is " + JSON.stringify(json)
-        );
-        window.alert("Welcome, " + values.name + ". Your account was successfully created.")
+  const handleSignUpButtonClick = (values: any) => {
+    doSignup(values.userID, values.password, values.name).then(
+      (success: boolean) => {
+        if (success) {
+          window.location.assign("/login");
+          window.alert(
+            "Welcome, " +
+              values.name +
+              ". Your account was successfully created."
+          );
+        } else {
+          window.alert("Error creating account");
+        }
       }
-      else {
-        window.alert ("Signup failed: " + JSON.stringify(json))
-      }
-    };
-    fetchData();
+    );
   };
 
   const formItemLayout = {
@@ -50,11 +34,8 @@ function SignUp() {
   };
 
   return (
-    <Form 
-    name="signup" {...formItemLayout}
-    onFinish={handleSignUpButtonClick}
-    >
-            <Form.Item
+    <Form name="signup" {...formItemLayout} onFinish={handleSignUpButtonClick}>
+      <Form.Item
         label="Name"
         name="name"
         rules={[
@@ -66,7 +47,7 @@ function SignUp() {
       >
         <Input placeholder="Fred Smith" />
       </Form.Item>
-       <Form.Item
+      <Form.Item
         label="User ID"
         name="userID"
         rules={[
@@ -76,9 +57,8 @@ function SignUp() {
           },
         ]}
       >
-        <Input placeholder="stock-market-whiz"/>
+        <Input placeholder="stock-market-whiz" />
       </Form.Item>
-
 
       <Form.Item
         label="Password"
@@ -90,7 +70,7 @@ function SignUp() {
           },
         ]}
       >
-        <Input.Password autoComplete="new-password"/>
+        <Input.Password autoComplete="new-password" />
       </Form.Item>
       <Form.Item
         wrapperCol={{
@@ -103,10 +83,7 @@ function SignUp() {
         </Button>
       </Form.Item>
     </Form>
-
-
-    
-  )
+  );
 }
 
 export default SignUp;

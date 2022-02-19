@@ -8,6 +8,12 @@ import {
   UserInfo,
 } from "./types";
 import fetch, { RequestInit } from "node-fetch";
+const Hashes = require("jshashes");
+const MD5 = new Hashes.MD5();
+
+const encryptPassword = (clearText: string): string => {
+  return MD5.hex(clearText);
+};
 
 const createRequestAuthorization = (methodType = "GET"): RequestInit => {
   return {
@@ -26,14 +32,57 @@ export const doLogout = () => {
   window.location.assign("/login");
 };
 
+export const doSignup = async (
+  email: string,
+  password: string,
+  name: string
+): Promise<boolean> => {
+  const encryptedPassword: string = encryptPassword(password);
+  console.log(
+    "signing up with clear password = ",
+    password,
+    ", encrypted =",
+    encryptedPassword
+  );
+
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: email,
+      password: encryptedPassword,
+      name: name,
+    }),
+  };
+  const response = await fetch("http://localhost:3005/signup", requestOptions);
+
+  const status: number = response.status;
+  const json: string = await response.json();
+
+  if (status === 200) {
+    return true;
+  } else {
+    console.log("Signup failed: " + JSON.stringify(json));
+    return false;
+  }
+};
+
 export const doLogin = async (
   email: string,
   password: string
 ): Promise<boolean> => {
+  const encryptedPassword: string = encryptPassword(password);
+
+  console.log(
+    "logging in with clear password = ",
+    password,
+    ", encrypted =",
+    encryptedPassword
+  );
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password:encryptedPassword }),
   };
   const response = await fetch("http://localhost:3005/login", requestOptions);
 
@@ -69,7 +118,7 @@ export const getAccount = async (): Promise<Account | null> => {
 
   switch (response.status) {
     case 200:
-      const account:Account = await response.json();
+      const account: Account = await response.json();
       return account;
 
     case 401:
