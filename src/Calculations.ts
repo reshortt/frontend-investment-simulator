@@ -128,7 +128,10 @@ function adjustForSplits(
 ): number {
   let shares: number = buyOrSell.shares;
   for (let transaction of transactions) {
-    if (transaction.type == TransactionType.SPLIT && transaction.symbol.toUpperCase() == buyOrSell.symbol.toUpperCase()) {
+    if (
+      transaction.type == TransactionType.SPLIT &&
+      transaction.symbol.toUpperCase() == buyOrSell.symbol.toUpperCase()
+    ) {
       if (transaction.date > buyOrSell.date) {
         shares = shares * (transaction.to / transaction.from);
       }
@@ -227,14 +230,39 @@ const getStockPriceOnDateLocal = async (
 ): Promise<number> => {
   const history: HistoricalPrice[] = await getPriceHistory(symbol, date);
 
-  for (let data of history) {
-    const historicalDate:Date = new Date(data.date)
-    if (historicalDate >= date)  {
-      //console.log(symbol, "price on ", date, ": ", data.price)
-      return data.price
+  // start from the beginning?
+  const startDiff: number | undefined =
+    history.length > 2
+      ? Math.abs(new Date(history[0].date).getTime() - new Date(date).getTime())
+      : undefined;
+  const endDiff: number | undefined =
+    history.length > 2
+      ? Math.abs(new Date(history[history.length - 1].date).getTime() - new Date(date).getTime())
+      : undefined;
+
+  // closer to the end
+  if (startDiff && endDiff && startDiff > endDiff) {
+
+    for (let i = history.length-1; i >=0; --i) {
+      const data:HistoricalPrice = history[i] 
+      const historicalDate: Date = new Date(data.date);
+      if (historicalDate <= date) {
+        //console.log(symbol, "(Reverse) price of ", symbol, " on ", date, ": ", data.price)
+        return data.price;
+      }
     }
   }
-  console.log(symbol, "price on ", date, ": ", 0)
+  // start from the beginning
+  else {
+    for (let data of history) {
+      const historicalDate: Date = new Date(data.date);
+      if (historicalDate >= date) {
+        //console.log(symbol, "(Forward) price of ", symbol, " on ", date, ": ", data.price)
+        return data.price;
+      }
+    }
+  }
+  console.log(symbol, "price on ", date, ": ", 0);
   return 0;
 };
 
