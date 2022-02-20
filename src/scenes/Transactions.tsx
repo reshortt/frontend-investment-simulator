@@ -67,10 +67,10 @@ function Transactions() {
         description =
           "Sell " +
           transaction.shares +
-          " " +
-          transaction.symbol +
-          " (" +
+          " of " +
           transaction.name +
+          " (" +
+          transaction.symbol +
           ") at " +
           formatCurrency(calcSharePrice(transaction))
         break;

@@ -6,6 +6,7 @@ import {
   Transaction,
   Account,
   UserInfo,
+  HistoricalPrice,
 } from "./types";
 import fetch, { RequestInit } from "node-fetch";
 const Hashes = require("jshashes");
@@ -350,6 +351,34 @@ export async function getStockPriceOnDate(
       return 0;
   }
 }
+
+export async function getHistoricalPrices(
+  symbol: string,
+  startDate: Date
+): Promise<HistoricalPrice[]> {
+  const requestOptions = createRequestAuthorization();
+
+  const queryParams = new URLSearchParams({
+    ticker: symbol,
+    date: startDate.toDateString(),
+  });
+  const queryURL = new URL("http://localhost:3005/API/getHistoricalPrices");
+  queryURL.search = queryParams.toString();
+
+  const response = await fetch(queryURL, requestOptions);
+  switch (response.status) {
+    case 200: {
+      const responseObj = await response.json();
+      return responseObj
+    }
+
+    default:
+      // 500 is possible for critical server erropr
+      console.log("unexpected buyAsset response");
+      return [];
+  }
+}
+
 export type BuyAssetResponse = {
   successful: boolean;
   remainingCash: number;

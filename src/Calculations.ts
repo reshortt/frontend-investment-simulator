@@ -1,12 +1,12 @@
 import { format, isValid } from "date-fns";
-import { getStockPriceOnDate } from "./APIService";
+import { getHistoricalPrices } from "./APIService";
 import {
   Asset,
-  Dividend,
   INITIAL_GIFT,
   Transaction,
   TransactionType,
   Account,
+  HistoricalPrice,
 } from "./types";
 
 type Position = {
@@ -128,7 +128,7 @@ function adjustForSplits(
 ): number {
   let shares: number = buyOrSell.shares;
   for (let transaction of transactions) {
-    if (transaction.type == TransactionType.SPLIT) {
+    if (transaction.type == TransactionType.SPLIT && transaction.symbol.toUpperCase() == buyOrSell.symbol.toUpperCase()) {
       if (transaction.date > buyOrSell.date) {
         shares = shares * (transaction.to / transaction.from);
       }
@@ -207,6 +207,37 @@ async function getPortfolioSnapshots(
   return snapshots;
 }
 
+const priceMap: Map<string, HistoricalPrice[]> = new Map();
+
+const getPriceHistory = async (
+  symbol: string,
+  startDate: Date
+): Promise<HistoricalPrice[]> => {
+  let prices: HistoricalPrice[] | undefined = priceMap.get(symbol);
+  if (prices) return prices;
+
+  prices = await getHistoricalPrices(symbol, startDate);
+  priceMap.set(symbol, prices);
+  return prices;
+};
+
+const getStockPriceOnDateLocal = async (
+  symbol: string,
+  date: Date
+): Promise<number> => {
+  const history: HistoricalPrice[] = await getPriceHistory(symbol, date);
+
+  for (let data of history) {
+    const historicalDate:Date = new Date(data.date)
+    if (historicalDate >= date)  {
+      //console.log(symbol, "price on ", date, ": ", data.price)
+      return data.price
+    }
+  }
+  console.log(symbol, "price on ", date, ": ", 0)
+  return 0;
+};
+
 export const getHistoricalValues = async (
   transactions: Transaction[]
 ): Promise<PortfolioValue[]> => {
@@ -215,20 +246,29 @@ export const getHistoricalValues = async (
   const snapshots: PortfolioSnapshot[] = await getPortfolioSnapshots(
     transactions
   );
+
   for (let snapshot of snapshots) {
     let value: number = 0;
     const snapshotDate: Date = new Date(snapshot.date);
+    //var debugMsg:string = "Date: " + snapshotDate + ": "
 
     for (let position of snapshot.positions) {
-      const price: number = await getStockPriceOnDate(
+      const price: number = await getStockPriceOnDateLocal(
         position.symbol,
         snapshotDate
       );
+      //debugMsg += ("-- " + position.shares + " of " + position.symbol + " at " + price)
       value += position.shares * price;
     }
+    //debugMsg += ("-- cash: " + snapshot.cash)
     value += snapshot.cash;
+
+    //console.log(debugMsg)
     values.push({ date: snapshotDate, value: value });
   }
+
+  priceMap.clear();
+
   return values;
 };
 
