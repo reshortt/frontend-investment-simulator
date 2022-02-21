@@ -15,8 +15,8 @@ Chart.register(...registerables);
 
 const lineColors:string[] = ["cadetblue", "darkorchid", "cornflowerblue", "indigo", "olive", "darkseagreen", "darkmagenta"]
 
-const POINT_RADIUS = 2.0
-const POINT_HOVER_RADIUS = 5.0
+const POINT_RADIUS = 3.0
+const POINT_HOVER_RADIUS = 6.0
 
 type LineData = {
   id: number;
@@ -41,11 +41,38 @@ function Analysis() {
     });
   }, []);
 
+  const MAX_POINTS:number = 100
+
+  const thinPortfolioValues = (originalValues:PortfolioValue[]):PortfolioValue[] => {
+
+    if (originalValues.length < MAX_POINTS) {
+      return originalValues
+    }
+
+    const thinnedValues:PortfolioValue[] = []
+    const interval:number = originalValues.length/MAX_POINTS
+
+    for (let i:number=0; i < originalValues.length; i += interval) {
+      const dateIdx = Math.floor(i)
+      thinnedValues.push(originalValues[dateIdx])
+    }
+    if (thinnedValues[thinnedValues.length-1] != originalValues[originalValues.length-1]) {
+      console.log("**** adding final value", JSON.stringify(originalValues[originalValues.length-1]))
+      thinnedValues.push(originalValues[originalValues.length-1])
+      console.log("*** is now equal? ", thinnedValues[thinnedValues.length-1] == originalValues[originalValues.length-1] )
+    }
+
+    console.log("**** Thinned values from ", originalValues.length, " to ", thinnedValues.length)
+    return thinnedValues
+  }
+
   const createChartData = (portfolioValues: PortfolioValue[]): ChartData => {
     const labels: string[] = [];
     const datasets: any[] = [];
     const totalValues: number[] = [];
     const cashValues: number[] = [];
+
+    portfolioValues = thinPortfolioValues(portfolioValues)
 
     const stockValueMap: Map<string, number[]> = new Map();
     for (let value of portfolioValues) {
@@ -53,7 +80,9 @@ function Analysis() {
         const stockValues: number[] | undefined = stockValueMap.get(
           stockValue.symbol
         );
-        if (!stockValues) stockValueMap.set(stockValue.symbol, []);
+        if (!stockValues) {
+          stockValueMap.set(stockValue.symbol, []);
+        }
       }
     }
 
