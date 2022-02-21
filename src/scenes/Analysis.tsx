@@ -5,82 +5,73 @@ import {
   getHistoricalValues,
   PortfolioValue,
 } from "../Calculations";
-import { Line, LineConfig } from "@ant-design/plots";
+//import { Line, LineConfig } from "@ant-design/plots";
 import { Empty, Spin } from "antd";
+import { Line } from "react-chartjs-2";
+import {Chart, registerables} from 'chart.js';
 
-type DateValue = { date: string; value: number };
+Chart.register(...registerables)
+
+type LineData = { id: number; label: string; data: number[] };
+type ChartData = { labels: string[]; datasets: LineData[] };
 
 function Analysis() {
-  const [config, setConfig] = useState<LineConfig | undefined>(undefined);
+  const [chartData, setChartData] = useState<ChartData | undefined>(undefined);
 
   useEffect(() => {
     getTransactions().then((transactions) => {
       getHistoricalValues(transactions).then((historicalValues) => {
         const chartData = createChartData(historicalValues);
-        const newConfig: LineConfig = createConfig(chartData);
-        setConfig(newConfig);
+        setChartData(chartData);
       });
     });
   }, []);
 
-  const createChartData = (values: PortfolioValue[]): DateValue[] => {
-    const chartData: DateValue[] = [];
-    for (let value of values) {
-      chartData.push({
-        date: formatDate(value.date, false),
-        value: value.value,
-      });
-    }
-    return chartData;
-  };
+  const createChartData = (values: PortfolioValue[]): ChartData => {
+    const labels: string[] = [];
+    const datasets: LineData[] = [];
+    const totalValues: number[] = [];
+    const cashValues: number[] = [];
 
-  const createConfig = (chartData: DateValue[]): LineConfig => {
-    return {
-      data: chartData,
-      padding: "auto",
-      xField: "date",
-      yField: "value",
-      annotations: [
-        {
-          type: "regionFilter",
-          start: ["min", "median"],
-          end: ["max", "0"],
-          color: "#F4664A",
-        },
-        //   {
-        //     type: "text",
-        //     position: ["min", "median"],
-        //     content: "hello friends",
-        //     offsetY: -4,
-        //     style: {
-        //       textBaseline: "bottom",
-        //     },
-        //   },
-        //   {
-        //     type: "line",
-        //     start: ["min", "median"],
-        //     end: ["max", "median"],
-        //     style: {
-        //       stroke: "#F4664A",
-        //       lineDash: [2, 2],
-        //     },
-        //   },
-      ],
+    type StockValues = {symbol:string, values:number[]}
+
+    for (let value of values) {
+      labels.push(formatDate(value.date, false))
+      totalValues.push(value.total)
+      cashValues.push(value.cash)
+    }
+
+    datasets.push({
+      id: 1,
+      label: "Total",
+      data: totalValues,
+    });
+
+    datasets.push({
+      id: 2,
+      label: "Cash",
+      data: cashValues,
+    });
+
+    const chartData: ChartData = {
+      labels,
+      datasets,
     };
+    return chartData;
   };
 
   return (
     <div className="Analysis">
       <header className="Analysis-header">
-        {config === undefined ? (
+        {chartData === undefined ? (
           <div>
-            <Spin size = "default"/>
+            <Spin size="default" />
           </div>
-        ) : config.data.length < 7 ? (
+        ) : chartData.labels.length < 7 ? (
           <Empty description="History unavailable for accounts created within the last week"></Empty>
         ) : (
           //@ts-ignore
-          <Line {...config} />
+          <Line datasetIdKey="1" data={chartData} />
         )}
       </header>
     </div>

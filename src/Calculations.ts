@@ -14,6 +14,11 @@ type Position = {
   shares: number;
 };
 
+type StockValue = {
+  symbol:string;
+  value:number;
+}
+
 type PortfolioSnapshot = {
   date: Date;
   positions: Position[];
@@ -22,7 +27,9 @@ type PortfolioSnapshot = {
 
 export type PortfolioValue = {
   date: Date;
-  value: number;
+  stocks: StockValue[];
+  cash: number;
+  total: number;
 };
 
 export const getCostBasis = (asset: Asset): number => {
@@ -266,6 +273,22 @@ const getStockPriceOnDateLocal = async (
   return 0;
 };
 
+
+// type StockValue = {
+//   symbol:string;
+//   value:number;
+// }
+
+// type PortfolioSnapshot = {
+//   date: Date;
+//   positions: Position[];
+//   cash: number;
+// };
+
+// export type PortfolioValue = {
+//   date: Date;
+//   values: StockValue[];
+// };
 export const getHistoricalValues = async (
   transactions: Transaction[]
 ): Promise<PortfolioValue[]> => {
@@ -276,23 +299,26 @@ export const getHistoricalValues = async (
   );
 
   for (let snapshot of snapshots) {
-    let value: number = 0;
+    let total: number = 0;
     const snapshotDate: Date = new Date(snapshot.date);
     //var debugMsg:string = "Date: " + snapshotDate + ": "
 
+    const stockValues:StockValue[] = []
     for (let position of snapshot.positions) {
       const price: number = await getStockPriceOnDateLocal(
         position.symbol,
         snapshotDate
       );
       //debugMsg += ("-- " + position.shares + " of " + position.symbol + " at " + price)
-      value += position.shares * price;
+      const stockValue:StockValue = {symbol: position.symbol, value:position.shares * price}
+      stockValues.push(stockValue)
+      total += stockValue.value;
     }
     //debugMsg += ("-- cash: " + snapshot.cash)
-    value += snapshot.cash;
+    total += snapshot.cash;
 
     //console.log(debugMsg)
-    values.push({ date: snapshotDate, value: value });
+    values.push({ date: snapshotDate, cash:snapshot.cash, total:total, stocks: stockValues });
   }
 
   priceMap.clear();
