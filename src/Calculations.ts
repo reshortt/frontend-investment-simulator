@@ -14,7 +14,7 @@ type Position = {
   shares: number;
 };
 
-type StockValue = {
+export type StockValue = {
   symbol:string;
   value:number;
 }
