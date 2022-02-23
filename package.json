@@ -39,7 +39,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start-pm2": "pm2 stop frontend-investment-simulator; pm2 delete frontend-investment-simulator; pm2 start --name frontend-investment-simulator npm -- run start",
+    "stop-pm2": "pm2 stop frontend-investment-simulator; pm2 delete frontend-investment-simulator"
   },
   "eslintConfig": {
     "extends": [

@@ -1,6 +1,13 @@
-import { Button, Form, Input, Spin } from "antd";
+import { Button, Form, Input, message as AntMessage, Spin } from "antd";
 import { useEffect, useState } from "react";
-import { doLogin, getTransactions, isLoggedIn } from "../APIService";
+import {
+  doLogin,
+  getTransactions,
+  getUserInfo,
+  isLoggedIn,
+} from "../APIService";
+import "antd/dist/antd.css";
+import { UserInfo } from "../types";
 
 function Login() {
   const [loggingIn, setLoggingIn] = useState<boolean>(false);
@@ -15,8 +22,18 @@ function Login() {
     setLoggingIn(true);
     doLogin(values.username, values.password).then((success: boolean) => {
       setLoggingIn(false);
-      if (!success) 
-         window.alert("Invalid credentials");
+      if (!success) {
+        AntMessage.error("Invalid credentials");
+      } else {
+        getUserInfo().then((info: UserInfo | null) => {
+          AntMessage.success(
+            "User " + info?.name + " successfully logged in",
+            1
+          ).then(() => {
+            window.location.assign("/");
+          });
+        });
+      }
     });
   };
 
