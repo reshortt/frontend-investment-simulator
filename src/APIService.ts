@@ -55,7 +55,7 @@ export const doSignup = async (
       name: name,
     }),
   };
-  const response = await fetch("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/signup", requestOptions);
+  const response = await fetch("http://ec2-54-144-18-145.compute-1.amazonaws.com/signup", requestOptions);
 
   const status: number = response.status;
   const json: string = await response.json();
@@ -85,7 +85,7 @@ export const doLogin = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password:encryptedPassword }),
   };
-  const response = await fetch("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/login", requestOptions);
+  const response = await fetch("http://ec2-54-144-18-145.compute-1.amazonaws.com/login", requestOptions);
 
   switch (response.status) {
     case 200:
@@ -112,7 +112,7 @@ export const doLogin = async (
 export const getAccount = async (): Promise<Account | null> => {
   const requestOptions = createRequestAuthorization();
   const response = await fetch(
-    "http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getAccount",
+    "http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getAccount",
     requestOptions
   );
 
@@ -136,7 +136,7 @@ export const getAccount = async (): Promise<Account | null> => {
 export const getUserInfo = async (): Promise<UserInfo | null> => {
   const requestOptions = createRequestAuthorization();
   const response = await fetch(
-    "http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getUserInfo",
+    "http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getUserInfo",
     requestOptions
   );
 
@@ -159,7 +159,7 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
 
 export const getBalance = async (yesterday: boolean): Promise<number> => {
   const requestOptions = createRequestAuthorization();
-  const getBalanceUrl = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getBalance");
+  const getBalanceUrl = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getBalance");
   const getBalanceQueryParams = new URLSearchParams({
     yesterday: `${yesterday}`,
   });
@@ -187,7 +187,7 @@ export const getAssets = async (): Promise<Asset[]> => {
   const requestOptions = createRequestAuthorization();
 
   const response = await fetch(
-    "http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getAssets",
+    "http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getAssets",
     requestOptions
   );
 
@@ -214,7 +214,7 @@ export const getTransactions = async (): Promise<Transaction[]> => {
   const requestOptions = createRequestAuthorization();
 
   const response = await fetch(
-    "http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getTransactions",
+    "http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getTransactions",
     requestOptions
   );
 
@@ -241,7 +241,7 @@ export const getCash = async (): Promise<number> => {
   const requestOptions = createRequestAuthorization();
 
   const response = await fetch(
-    "http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getCash",
+    "http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getCash",
     requestOptions
   );
 
@@ -272,7 +272,7 @@ export const lookupTicker = async (
   // TODO: credentials not needed for stocklookup. ...remove
   const requestOptions = createRequestAuthorization();
 
-  const lookupTickerURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/lookupTicker");
+  const lookupTickerURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com/API/lookupTicker");
   const getTickerLookupParams = new URLSearchParams({
     tickerSymbol: tickerSymbol,
   });
@@ -306,7 +306,7 @@ export async function getHistoricalDividends(
 
   const queryParams = new URLSearchParams({ ticker: symbol });
 
-  const queryURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getHistoricalDividends");
+  const queryURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getHistoricalDividends");
   queryURL.search = queryParams.toString();
 
   const response = await fetch(queryURL, requestOptions);
@@ -333,7 +333,7 @@ export async function getStockPriceOnDate(
     ticker: symbol,
     date: date.toDateString(),
   });
-  const queryURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getStockPriceOnDate");
+  const queryURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getStockPriceOnDate");
   queryURL.search = queryParams.toString();
 
   const response = await fetch(queryURL, requestOptions);
@@ -361,7 +361,7 @@ export async function getHistoricalPrices(
     ticker: symbol,
     date: startDate.toDateString(),
   });
-  const queryURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getHistoricalPrices");
+  const queryURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getHistoricalPrices");
   queryURL.search = queryParams.toString();
 
   const response = await fetch(queryURL, requestOptions);
@@ -393,7 +393,7 @@ export const buyAsset = async (
 
   const sharesString: string = shares.toString();
   const priceString: string = price.toString();
-  const buySharesURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/buyAsset");
+  const buySharesURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com/API/buyAsset");
   const buySharesQueryParams = new URLSearchParams({
     tickerSymbol: symbol,
     shares: sharesString,
@@ -431,7 +431,7 @@ export const sellAsset = async (
 
   const sharesString: string = shares.toString();
   const priceString: string = price.toString();
-  const sellAssetURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/sellAsset");
+  const sellAssetURL = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com/API/sellAsset");
   const sellAssetQueryParams = new URLSearchParams({
     tickerSymbol: symbol,
     shares: sharesString,
@@ -463,7 +463,7 @@ export const getStockPrice = async (
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
-  const getStockPriceUrl = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com:3005/API/getStockPrice");
+  const getStockPriceUrl = new URL("http://ec2-54-144-18-145.compute-1.amazonaws.com/API/getStockPrice");
   const getStockPriceQueryParams = new URLSearchParams({
     tickerSymbol: tickerSymbol,
   });
