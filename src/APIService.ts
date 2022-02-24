@@ -371,7 +371,10 @@ export async function getHistoricalPrices(
     ticker: symbol,
     date: startDate.toDateString(),
   });
-  const queryURL = new URL (getURL("/API/getHistoricalPrices"));
+
+  const queryURLString = getURL("/API/getHistoricalPrices")
+  console.log ("Getting  historical prices for ", symbol, " with URL=", queryURLString)
+  const queryURL = new URL (queryURLString);
   queryURL.search = queryParams.toString();
 
   const response = await fetch(queryURL, requestOptions);
