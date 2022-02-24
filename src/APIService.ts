@@ -13,7 +13,7 @@ const Hashes = require("jshashes");
 const MD5 = new Hashes.MD5();
 
 const isDevMode = ():boolean => {
-  return true;
+  return false;
 }
 
 const AWS_PREFIX:string = "http://ec2-54-144-18-145.compute-1.amazonaws.com"
