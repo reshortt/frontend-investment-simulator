@@ -1,6 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
 
-import fetch from "node-fetch";
 import { Button, Form, Input } from "antd";
 import { doSignup } from "../APIService";
 

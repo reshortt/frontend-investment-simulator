@@ -12,6 +12,17 @@ import fetch, { RequestInit } from "node-fetch";
 const Hashes = require("jshashes");
 const MD5 = new Hashes.MD5();
 
+const isDevMode = ():boolean => {
+  return false;
+}
+
+const AWS_PREFIX:string = "http://ec2-54-144-18-145.compute-1.amazonaws.com"
+
+const getURL = (endpoint:string):string => {
+  const url:string = isDevMode() ? AWS_PREFIX + endpoint : endpoint;
+  return url;
+}
+
 const encryptPassword = (clearText: string): string => {
   return MD5.hex(clearText);
 };
@@ -30,7 +41,6 @@ export const isLoggedIn = (): boolean =>
 
 export const doLogout = () => {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
-  window.location.assign("/login");
 };
 
 export const doSignup = async (
@@ -55,7 +65,7 @@ export const doSignup = async (
       name: name,
     }),
   };
-  const response = await fetch("/API/signup", requestOptions);
+  const response = await fetch(getURL("/API/signup"), requestOptions);
 
   const status: number = response.status;
   const json: string = await response.json();
@@ -85,7 +95,7 @@ export const doLogin = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password:encryptedPassword }),
   };
-  const response = await fetch("/API/login", requestOptions);
+  const response = await fetch (getURL("/API/login"), requestOptions);
 
   switch (response.status) {
     case 200:
@@ -112,7 +122,7 @@ export const doLogin = async (
 export const getAccount = async (): Promise<Account | null> => {
   const requestOptions = createRequestAuthorization();
   const response = await fetch(
-    "/API/getAccount",
+    getURL("/API/getAccount"),
     requestOptions
   );
 
@@ -136,7 +146,7 @@ export const getAccount = async (): Promise<Account | null> => {
 export const getUserInfo = async (): Promise<UserInfo | null> => {
   const requestOptions = createRequestAuthorization();
   const response = await fetch(
-    "/API/getUserInfo",
+    getURL("/API/getUserInfo"),
     requestOptions
   );
 
@@ -159,7 +169,7 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
 
 export const getBalance = async (yesterday: boolean): Promise<number> => {
   const requestOptions = createRequestAuthorization();
-  const getBalanceUrl = new URL("/API/getBalance");
+  const getBalanceUrl = new URL (getURL("/API/getBalance"));
   const getBalanceQueryParams = new URLSearchParams({
     yesterday: `${yesterday}`,
   });
@@ -187,7 +197,7 @@ export const getAssets = async (): Promise<Asset[]> => {
   const requestOptions = createRequestAuthorization();
 
   const response = await fetch(
-    "/API/getAssets",
+    getURL("/API/getAssets"),
     requestOptions
   );
 
@@ -214,7 +224,7 @@ export const getTransactions = async (): Promise<Transaction[]> => {
   const requestOptions = createRequestAuthorization();
 
   const response = await fetch(
-    "/API/getTransactions",
+    getURL("/API/getTransactions"),
     requestOptions
   );
 
@@ -241,7 +251,7 @@ export const getCash = async (): Promise<number> => {
   const requestOptions = createRequestAuthorization();
 
   const response = await fetch(
-    "/API/getCash",
+    getURL("/API/getCash"),
     requestOptions
   );
 
@@ -272,7 +282,7 @@ export const lookupTicker = async (
   // TODO: credentials not needed for stocklookup. ...remove
   const requestOptions = createRequestAuthorization();
 
-  const lookupTickerURL = new URL("/API/lookupTicker");
+  const lookupTickerURL = new URL (getURL("/API/lookupTicker"));
   const getTickerLookupParams = new URLSearchParams({
     tickerSymbol: tickerSymbol,
   });
@@ -306,7 +316,7 @@ export async function getHistoricalDividends(
 
   const queryParams = new URLSearchParams({ ticker: symbol });
 
-  const queryURL = new URL("/API/getHistoricalDividends");
+  const queryURL = new URL (getURL("/API/getHistoricalDividends"));
   queryURL.search = queryParams.toString();
 
   const response = await fetch(queryURL, requestOptions);
@@ -333,7 +343,7 @@ export async function getStockPriceOnDate(
     ticker: symbol,
     date: date.toDateString(),
   });
-  const queryURL = new URL("/API/getStockPriceOnDate");
+  const queryURL = new URL (getURL("/API/getStockPriceOnDate"));
   queryURL.search = queryParams.toString();
 
   const response = await fetch(queryURL, requestOptions);
@@ -361,7 +371,7 @@ export async function getHistoricalPrices(
     ticker: symbol,
     date: startDate.toDateString(),
   });
-  const queryURL = new URL("/API/getHistoricalPrices");
+  const queryURL = new URL (getURL("/API/getHistoricalPrices"));
   queryURL.search = queryParams.toString();
 
   const response = await fetch(queryURL, requestOptions);
@@ -393,7 +403,7 @@ export const buyAsset = async (
 
   const sharesString: string = shares.toString();
   const priceString: string = price.toString();
-  const buySharesURL = new URL("/API/buyAsset");
+  const buySharesURL = new URL (getURL("/API/buyAsset"));
   const buySharesQueryParams = new URLSearchParams({
     tickerSymbol: symbol,
     shares: sharesString,
@@ -431,7 +441,7 @@ export const sellAsset = async (
 
   const sharesString: string = shares.toString();
   const priceString: string = price.toString();
-  const sellAssetURL = new URL("/API/sellAsset");
+  const sellAssetURL = new URL (getURL("/API/sellAsset"));
   const sellAssetQueryParams = new URLSearchParams({
     tickerSymbol: symbol,
     shares: sharesString,
@@ -463,7 +473,7 @@ export const getStockPrice = async (
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
-  const getStockPriceUrl = new URL("/API/getStockPrice");
+  const getStockPriceUrl = new URL (getURL("/API/getStockPrice"));
   const getStockPriceQueryParams = new URLSearchParams({
     tickerSymbol: tickerSymbol,
   });

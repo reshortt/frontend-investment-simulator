@@ -57,12 +57,9 @@ function Analysis() {
       thinnedValues.push(originalValues[dateIdx])
     }
     if (thinnedValues[thinnedValues.length-1] != originalValues[originalValues.length-1]) {
-      console.log("**** adding final value", JSON.stringify(originalValues[originalValues.length-1]))
       thinnedValues.push(originalValues[originalValues.length-1])
-      console.log("*** is now equal? ", thinnedValues[thinnedValues.length-1] == originalValues[originalValues.length-1] )
     }
 
-    console.log("**** Thinned values from ", originalValues.length, " to ", thinnedValues.length)
     return thinnedValues
   }
 

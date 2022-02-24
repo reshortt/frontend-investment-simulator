@@ -13,6 +13,7 @@ const handleLogout = () => {
   const isOK: boolean = window.confirm("OK to Log Out?");
   if (!isOK) return;
   doLogout();
+  window.location.assign("/login");
 };
 const logoutButton = (
   <Button type="primary" onClick={handleLogout}>
