@@ -12,15 +12,30 @@ import fetch, { RequestInit } from "node-fetch";
 const Hashes = require("jshashes");
 const MD5 = new Hashes.MD5();
 
-const isDevMode = ():boolean => {
-  return true;
+const isFrontendLocal = ():boolean => {
+  return false;
+}
+
+const isBackendLocal = (): boolean => {
+   return false;
 }
 
 const AWS_PREFIX:string = "http://ec2-54-144-18-145.compute-1.amazonaws.com"
+const LOCAL_PREFIX:string = "http://localhost:3005"
 
-const getURL = (endpoint:string):string => {
-  const url:string = isDevMode() ? AWS_PREFIX + endpoint : endpoint;
-  return url;
+const getURL = (endpoint:string, params:Record<string, string>={}):string => {
+
+  let prefix:string= ""
+  if (isBackendLocal() && isFrontendLocal()) {
+    prefix = LOCAL_PREFIX   
+  }
+  else if (isFrontendLocal() && !isBackendLocal()){
+    prefix = AWS_PREFIX
+  }
+  
+  let url:string = prefix + endpoint
+  const queryString:string = new URLSearchParams(params).toString()
+  return url + "?" + queryString;
 }
 
 const encryptPassword = (clearText: string): string => {
@@ -169,12 +184,12 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
 
 export const getBalance = async (yesterday: boolean): Promise<number> => {
   const requestOptions = createRequestAuthorization();
-  const getBalanceUrl = new URL (getURL("/API/getBalance"));
   const getBalanceQueryParams = new URLSearchParams({
     yesterday: `${yesterday}`,
   });
-  getBalanceUrl.search = getBalanceQueryParams.toString();
-  const response = await fetch(getBalanceUrl, requestOptions);
+
+  const urlString = getURL("/API/getBalance", {yesterday: `${yesterday}`});
+  const response = await fetch(urlString, requestOptions);
 
   switch (response.status) {
     case 200:
@@ -282,13 +297,11 @@ export const lookupTicker = async (
   // TODO: credentials not needed for stocklookup. ...remove
   const requestOptions = createRequestAuthorization();
 
-  const lookupTickerURL = new URL (getURL("/API/lookupTicker"));
-  const getTickerLookupParams = new URLSearchParams({
+  const urlString:string = getURL("/API/lookupTicker", {
     tickerSymbol: tickerSymbol,
   });
-  lookupTickerURL.search = getTickerLookupParams.toString();
 
-  const response = await fetch(lookupTickerURL, requestOptions);
+  const response = await fetch(urlString, requestOptions);
 
   console.log("ticker lookup: ", response.status, " - ", response.json);
 
@@ -314,12 +327,9 @@ export async function getHistoricalDividends(
 ): Promise<Dividend[]> {
   const requestOptions = createRequestAuthorization();
 
-  const queryParams = new URLSearchParams({ ticker: symbol });
 
-  const queryURL = new URL (getURL("/API/getHistoricalDividends"));
-  queryURL.search = queryParams.toString();
-
-  const response = await fetch(queryURL, requestOptions);
+  const queryURLString = getURL("/API/getHistoricalDividends", { ticker: symbol } );
+  const response = await fetch(queryURLString, requestOptions);
 
   switch (response.status) {
     case 200: {
@@ -339,14 +349,13 @@ export async function getStockPriceOnDate(
 ): Promise<number> {
   const requestOptions = createRequestAuthorization();
 
-  const queryParams = new URLSearchParams({
+ 
+  const queryURLString = getURL("/API/getStockPriceOnDate", {
     ticker: symbol,
     date: date.toDateString(),
   });
-  const queryURL = new URL (getURL("/API/getStockPriceOnDate"));
-  queryURL.search = queryParams.toString();
 
-  const response = await fetch(queryURL, requestOptions);
+  const response = await fetch(queryURLString, requestOptions);
   switch (response.status) {
     case 200: {
       const responseObj = await response.json();
@@ -367,17 +376,13 @@ export async function getHistoricalPrices(
 ): Promise<HistoricalPrice[]> {
   const requestOptions = createRequestAuthorization();
 
-  const queryParams = new URLSearchParams({
+  const queryURLString = getURL("/API/getHistoricalPrices", {
     ticker: symbol,
     date: startDate.toDateString(),
-  });
-
-  const queryURLString = getURL("/API/getHistoricalPrices")
+  })
   console.log ("Getting  historical prices for ", symbol, " with URL=", queryURLString)
-  const queryURL = new URL (queryURLString);
-  queryURL.search = queryParams.toString();
 
-  const response = await fetch(queryURL, requestOptions);
+  const response = await fetch(queryURLString, requestOptions);
   switch (response.status) {
     case 200: {
       const responseObj = await response.json();
@@ -406,15 +411,14 @@ export const buyAsset = async (
 
   const sharesString: string = shares.toString();
   const priceString: string = price.toString();
-  const buySharesURL = new URL (getURL("/API/buyAsset"));
-  const buySharesQueryParams = new URLSearchParams({
+  const urlString:string = getURL("/API/buyAsset", {
     tickerSymbol: symbol,
     shares: sharesString,
     price: priceString,
   });
-  buySharesURL.search = buySharesQueryParams.toString();
 
-  const response = await fetch(buySharesURL, requestOptions);
+
+  const response = await fetch(urlString, requestOptions);
 
   switch (response.status) {
     case 200: {
@@ -444,15 +448,13 @@ export const sellAsset = async (
 
   const sharesString: string = shares.toString();
   const priceString: string = price.toString();
-  const sellAssetURL = new URL (getURL("/API/sellAsset"));
-  const sellAssetQueryParams = new URLSearchParams({
+  const urlString = getURL("/API/sellAsset", {
     tickerSymbol: symbol,
     shares: sharesString,
     price: priceString,
   });
-  sellAssetURL.search = sellAssetQueryParams.toString();
 
-  const response = await fetch(sellAssetURL, requestOptions);
+  const response = await fetch(urlString, requestOptions);
 
   console.log("response: ", response.status);
 
@@ -476,13 +478,10 @@ export const getStockPrice = async (
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
-  const getStockPriceUrl = new URL (getURL("/API/getStockPrice"));
-  const getStockPriceQueryParams = new URLSearchParams({
+  const urlString:string = getURL("/API/getStockPrice", {
     tickerSymbol: tickerSymbol,
   });
-  getStockPriceUrl.search = getStockPriceQueryParams.toString();
-
-  const response = await fetch(getStockPriceUrl, requestOptions);
+  const response = await fetch(urlString, requestOptions);
 
   const userResponseObj = await response.json();
   console.log("Get Stock Price Response:: ", userResponseObj);
