@@ -20,6 +20,13 @@ const isBackendLocal = (): boolean => {
    return false;
 }
 
+const isBackendRemote = (): boolean => {
+  return !isBackendLocal()
+}
+
+const isFrontendRemote = (): boolean => {
+  return !isFrontendLocal()
+}
 const AWS_PREFIX:string = "http://ec2-54-144-18-145.compute-1.amazonaws.com"
 const LOCAL_PREFIX:string = "http://localhost:3005"
 
@@ -29,8 +36,11 @@ const getURL = (endpoint:string, params:Record<string, string>={}):string => {
   if (isBackendLocal() && isFrontendLocal()) {
     prefix = LOCAL_PREFIX   
   }
-  else if (isFrontendLocal() && !isBackendLocal()){
+  else if (isFrontendLocal() && isBackendRemote()){
     prefix = AWS_PREFIX
+  }
+  else if (isFrontendRemote() && isBackendRemote()) {
+    prefix = ""
   }
   
   let url:string = prefix + endpoint
