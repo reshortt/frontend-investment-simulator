@@ -156,7 +156,7 @@ async function getPortfolioSnapshots(
   let cash: number = 0;
   const startDate: Date = new Date(transactions[0].date);
   const endDate: Date = new Date(Date.now());
-  endDate.setDate(endDate.getDate() - 2);
+  endDate.setDate(endDate.getDate() - 1);
 
   for (
     let date: Date = startDate;
