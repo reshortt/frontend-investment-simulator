@@ -28,7 +28,7 @@ export default function Buy() {
   const [loadingPrice, setLoadingPrice] = useState<boolean>(false);
 
   const handleTickerSymbol = (e: ChangeEvent<HTMLInputElement>) => {
-    setTypedSymbol(e.target.value);
+    setTypedSymbol(e.target.value.toUpperCase());
   };
 
   const handleSharesToBuy = (e: ChangeEvent<HTMLInputElement>) => {
@@ -155,7 +155,8 @@ export default function Buy() {
   return (
     <Form name="buy" {...formItemLayout}>
       <Form.Item label="Stock">
-        <Input
+        <Input 
+          value={typedSymbol} 
           placeholder="Enter stock ticker symbol"
           onChange={handleTickerSymbol}
         ></Input>
