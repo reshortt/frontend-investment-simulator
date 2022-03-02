@@ -5,9 +5,14 @@ import {isLoggedIn } from "./APIService";
 import NavPane from "./scenes/NavPane";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SignUp from "./scenes/SignUp";
+import { Helmet as ReactHelmet } from "react-helmet";
 
 export default function App() {
   return (
+    <div>
+      <ReactHelmet >
+      <title>Investment Simulator</title>
+        </ReactHelmet>
     <Router>
       <div>
         <Header />
@@ -34,5 +39,6 @@ export default function App() {
         </Switch>
       </div>
     </Router>
+    </div>
   );
 }
