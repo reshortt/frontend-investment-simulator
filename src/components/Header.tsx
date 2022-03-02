@@ -5,6 +5,9 @@ import { UserInfo } from "../types";
 
 export default function Header() {
   const Container = styled.div`
+    padding-left: 10px;
+    padding-bottom: 60px;
+    font-size: 16px;
     width: 100%;
     height: 70px;
     background-color: green;
@@ -14,7 +17,7 @@ export default function Header() {
 
   useEffect(() => {
     if (isLoggedIn() && !userInfo) {
-        console.log("Getting User Info . Currently it is ", userInfo)
+        //console.log("Getting User Info . Currently it is ", userInfo)
       getUserInfo().then((info: UserInfo | null) => {
         if (info) {
           setUserInfo(info);
@@ -31,7 +34,6 @@ export default function Header() {
             font:"Arial",
             textAlign: "center",
             verticalAlign : "center",
-            paddingTop : "10"
         }    
         }
       >
