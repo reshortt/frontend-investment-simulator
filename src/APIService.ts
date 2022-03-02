@@ -74,12 +74,12 @@ export const doSignup = async (
   name: string
 ): Promise<boolean> => {
   const encryptedPassword: string = encryptPassword(password);
-  console.log(
-    "signing up with clear password = ",
-    password,
-    ", encrypted =",
-    encryptedPassword
-  );
+  // console.log(
+  //   "signing up with clear password = ",
+  //   password,
+  //   ", encrypted =",
+  //   encryptedPassword
+  // );
 
   const requestOptions = {
     method: "POST",
@@ -109,12 +109,12 @@ export const doLogin = async (
 ): Promise<boolean> => {
   const encryptedPassword: string = encryptPassword(password);
 
-  console.log(
-    "logging in with clear password = ",
-    password,
-    ", encrypted =",
-    encryptedPassword
-  );
+  // console.log(
+  //   "logging in with clear password = ",
+  //   password,
+  //   ", encrypted =",
+  //   encryptedPassword
+  // );
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
