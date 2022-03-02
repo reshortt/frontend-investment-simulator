@@ -10,11 +10,12 @@ import { Helmet as ReactHelmet } from "react-helmet";
 export default function App() {
   return (
     <div>
+     
+    <Router>
+      <div>
       <ReactHelmet >
       <title>Investment Simulator</title>
         </ReactHelmet>
-    <Router>
-      <div>
         <Header />
         <br/>
         <Switch>
