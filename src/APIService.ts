@@ -27,7 +27,7 @@ const isBackendRemote = (): boolean => {
 const isFrontendRemote = (): boolean => {
   return !isFrontendLocal()
 }
-const AWS_PREFIX:string = "http://ec2-54-144-18-145.compute-1.amazonaws.com"
+const AWS_PREFIX:string = "https://reshortt.me"
 const LOCAL_PREFIX:string = "http://localhost:3005"
 
 const getURL = (endpoint:string, params:Record<string, string>={}):string => {
@@ -109,12 +109,6 @@ export const doLogin = async (
 ): Promise<boolean> => {
   const encryptedPassword: string = encryptPassword(password);
 
-  // console.log(
-  //   "logging in with clear password = ",
-  //   password,
-  //   ", encrypted =",
-  //   encryptedPassword
-  // );
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
