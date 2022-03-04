@@ -335,3 +335,17 @@ export const calcSharePrice = (transaction: Transaction): number => {
     return perShare;
   }
 };
+
+export const parseCash = (text:string):number => {
+  if (!text) return 0
+  text = text.replace("$", '')
+  const floatVal:number = parseFloat(text)
+  return floatVal
+
+} 
+export const parsePercent = (text:string):number => {
+  if (!text) return 0
+  text = text.replace("%", '')
+  const intVal:number = parseFloat(text)
+  return intVal
+} 

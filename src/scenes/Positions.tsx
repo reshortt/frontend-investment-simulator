@@ -11,6 +11,8 @@ import {
   getGainLoss,
   getPercentOfAccount,
   getQuantity,
+  parseCash,
+  parsePercent,
 } from "../Calculations";
 
 type PositionRow = {
@@ -23,6 +25,7 @@ type PositionRow = {
   currentValue: string;
   percentOfAccount: string;
   gain: string;
+  gainPercent: string;
 };
 
 function Positions() {
@@ -61,6 +64,7 @@ function Positions() {
         currentValue: formatCurrency(getAssetValue(asset)),
         percentOfAccount: formatPercent(getPercentOfAccount(user, asset)),
         gain: formatCurrency(getGainLoss(asset)),
+        gainPercent: formatPercent(getGainLoss(asset) / getCostBasis(asset)),
       });
     }
     //@ts-ignore
@@ -92,14 +96,32 @@ function Positions() {
       dataIndex: "percentOfAccount",
       key: "percentOfAccount",
     },
-    { title: "Total Gain/Loss", dataIndex: "gain", key: "gain" },
+    {
+      title: "Total Gain/Loss",
+      dataIndex: "gain",
+      key: "gain",
+      onCell: (record: any) => ({
+        style: {
+          color: (parseCash(record.gain) < 0) ? "red": "black",
+        }
+      })
+    },
+    {
+      title: "Total Gain/Loss %",
+      dataIndex: "gainPercent",
+      key: "gainPercent",
+      onCell: (record: any) => ({
+        style: {
+          color: (parsePercent(record.gainPercent) < 0) ? "red": "black",
+        }
+      })
+    },
   ];
 
+  const tablePaginationConfig: TablePaginationConfig = {
+    pageSize: 100,
+  };
 
-  const tablePaginationConfig:TablePaginationConfig = {
-    pageSize : 100
-  }
-  
   return (
     <div className="Positions">
       <header className="Overview-header">
@@ -108,7 +130,11 @@ function Positions() {
             <Spin size="default" />
           </div>
         ) : (
-          <Table dataSource={data} columns={columns} pagination={tablePaginationConfig}/>
+          <Table
+            dataSource={data}
+            columns={columns}
+            pagination={tablePaginationConfig}
+          />
         )}
       </header>
     </div>
