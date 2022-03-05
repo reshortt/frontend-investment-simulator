@@ -136,8 +136,8 @@ function adjustForSplits(
   let shares: number = buyOrSell.shares;
   for (let transaction of transactions) {
     if (
-      transaction.type == TransactionType.SPLIT &&
-      transaction.symbol.toUpperCase() == buyOrSell.symbol.toUpperCase()
+      transaction.type === TransactionType.SPLIT &&
+      transaction.symbol.toUpperCase() === buyOrSell.symbol.toUpperCase()
     ) {
       if (transaction.date > buyOrSell.date) {
         shares = shares * (transaction.to / transaction.from);
@@ -327,7 +327,7 @@ export const getHistoricalValues = async (
 };
 
 export const calcSharePrice = (transaction: Transaction): number => {
-  if (transaction.type == TransactionType.BUY) {
+  if (transaction.type === TransactionType.BUY) {
     return (transaction.amount - transaction.commission) / transaction.shares;
   } else {
     const perShare: number =

@@ -7,7 +7,7 @@ import {
   getStockPrice,
   lookupTicker,
 } from "../APIService";
-import { formatCurrency, getAccountValue } from "../Calculations";
+import { formatCurrency } from "../Calculations";
 import { COMMISSION } from "../types";
 
 const PLEASE_ENTER_VALID_STOCK: string =
@@ -193,7 +193,7 @@ export default function Buy() {
         <Input
           placeholder={"Enter number of shares to buy"}
           onChange={handleSharesToBuy}
-          value={sharesToBuy == 0 ? undefined : sharesToBuy}
+          value={sharesToBuy === 0 ? undefined : sharesToBuy}
         ></Input>
       </Form.Item>
 
@@ -220,7 +220,7 @@ export default function Buy() {
           type="primary"
           onClick={handlePurchase}
           disabled={
-            sharesToBuy == 0 ||
+            sharesToBuy === 0 ||
             loadingPrice ||
             loadingStock ||
             !companyName ||

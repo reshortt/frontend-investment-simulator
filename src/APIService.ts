@@ -187,10 +187,7 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
 };
 
 export const getBalance = async (yesterday: boolean): Promise<number> => {
-  const requestOptions = createRequestAuthorization();
-  const getBalanceQueryParams = new URLSearchParams({
-    yesterday: `${yesterday}`,
-  });
+  const requestOptions = createRequestAuthorization()
 
   const urlString = getURL("/API/getBalance", {yesterday: `${yesterday}`});
   const response = await fetch(urlString, requestOptions);
@@ -278,7 +275,6 @@ export const getCash = async (): Promise<number> => {
     case 200:
       const userResponseObj = await response.json();
 
-      console.log("Transactions retrieved: " + userResponseObj.cash);
       return userResponseObj.cash;
 
     case 401:
@@ -508,12 +504,6 @@ export const getStockPrice = async (
 };
 
 export const getShareCount = (asset: Asset | null | undefined): number => {
-  console.log(
-    "get Share count for ",
-    asset?.stock?.symbol,
-    " with ",
-    asset?.lots
-  );
 
   var totalCount: number = 0;
   if (!asset) return 0;
@@ -522,6 +512,5 @@ export const getShareCount = (asset: Asset | null | undefined): number => {
     totalCount += currLot.shares;
   });
 
-  console.log(" ---> share count = ", totalCount);
   return totalCount;
 };
