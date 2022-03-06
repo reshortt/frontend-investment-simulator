@@ -146,11 +146,7 @@ function Analysis() {
 
   return (
     <div className="Analysis">
-      <header className="Analysis-header"  style = {
-        {
-          maxHeight: "80vh",
-        }
-      }>
+      <header className="Analysis-header" >
         {chartData === undefined ? (
           <div>
             <Spin size="default" />
