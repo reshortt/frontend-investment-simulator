@@ -1,8 +1,7 @@
 import { Button, Form, Input, message as AntMessage, Spin } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   doLogin,
-  getTransactions,
   getUserInfo,
   isLoggedIn,
 } from "../APIService";
@@ -11,13 +10,7 @@ import { UserInfo } from "../types";
 
 function Login() {
   const [loggingIn, setLoggingIn] = useState<boolean>(false);
-
-  // useEffect(() => {
-  //   getTransactions().then((transactions) => {
-  //     setData(calcData(transactions));
-  //   });
-  // }, []);
-
+  
   const onFinish = (values: any) => {
     setLoggingIn(true);
     doLogin(values.username, values.password).then((success: boolean) => {
@@ -116,22 +109,6 @@ function Login() {
       </Form.Item>
     </Form>
   );
-
-  // return (
-  //   <div className="Login">
-  //     <label> Email </label>
-  //     <input name="typedEmail" onChange={handleUserInput} />
-  //     <br />
-  //     <label> Password </label>
-  //     <input name="typedPassword" onChange={handleUserInput} />
-  //     <br />
-  //     <button onClick={handleLoginButtonClick}>Login</button>
-  //     <br />
-  //     <label>No account?</label>
-  //     <label> Sign Up </label>
-  //     <header className="Login-header"></header>
-  //   </div>
-  // );
 }
 
 export default Login;

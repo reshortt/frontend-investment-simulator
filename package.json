@@ -20,7 +20,6 @@
     "chart.js": "^3.7.1",
     "date-fns": "^2.27.0",
     "dayjs": "^1.10.7",
-    "jshashes": "^1.0.8",
     "node-fetch": "2.6.1",
     "react": "^17.0.2",
     "react-chartjs-2": "^4.0.1",

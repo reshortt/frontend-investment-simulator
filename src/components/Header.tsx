@@ -49,7 +49,6 @@ export default function Header() {
           font: "Arial",
           textAlign: "center",
           verticalAlign: "bottom",
-          paddingTop: "80px",
           paddingLeft: "10px"
         }}
       >

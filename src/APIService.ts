@@ -9,8 +9,6 @@ import {
   HistoricalPrice,
 } from "./types";
 import fetch, { RequestInit } from "node-fetch";
-const Hashes = require("jshashes");
-const MD5 = new Hashes.MD5();
 
 const isFrontendLocal = ():boolean => {
   return false;
@@ -48,9 +46,7 @@ const getURL = (endpoint:string, params:Record<string, string>={}):string => {
   return url + "?" + queryString;
 }
 
-const encryptPassword = (clearText: string): string => {
-  return MD5.hex(clearText);
-};
+
 
 const createRequestAuthorization = (methodType = "GET"): RequestInit => {
   return {
@@ -69,24 +65,17 @@ export const doLogout = () => {
 };
 
 export const doSignup = async (
-  email: string,
+  userID: string,
   password: string,
   name: string
 ): Promise<boolean> => {
-  const encryptedPassword: string = encryptPassword(password);
-  // console.log(
-  //   "signing up with clear password = ",
-  //   password,
-  //   ", encrypted =",
-  //   encryptedPassword
-  // );
 
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      email: email,
-      password: encryptedPassword,
+      userID: userID,
+      password,
       name: name,
     }),
   };
@@ -104,15 +93,14 @@ export const doSignup = async (
 };
 
 export const doLogin = async (
-  email: string,
+  userID: string,
   password: string
 ): Promise<boolean> => {
-  const encryptedPassword: string = encryptPassword(password);
 
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password:encryptedPassword }),
+    body: JSON.stringify({ userID, password }),
   };
   const response = await fetch (getURL("/API/login"), requestOptions);
 
@@ -121,14 +109,12 @@ export const doLogin = async (
       const responseObj = await response.json();
       sessionStorage.setItem(AUTH_TOKEN_KEY, responseObj.token);
       console.log("Successful login: " + responseObj);
-      // TODO log someone in, make it available everywhere
-
       return true;
 
     case 401:
     case 400:
       // todo: better way to show error
-      console.log("unsuccessful login for user " + email);
+      console.log("unsuccessful login for user " + userID);
       return false;
 
     default:

@@ -62,8 +62,8 @@ function Overview() {
 
         <Form.Item label="User ID" labelAlign="right">
           <span className="ant-form-text">
-            {userInfo && !loadingUserInfo && userInfo.email ? (
-              userInfo.email
+            {userInfo && !loadingUserInfo && userInfo.userID ? (
+              userInfo.userID
             ) : (
               <Spin size="small" />
             )}
