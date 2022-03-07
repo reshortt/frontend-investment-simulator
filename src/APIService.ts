@@ -27,7 +27,7 @@ const isBackendRemote = (): boolean => {
 const isFrontendRemote = (): boolean => {
   return !isFrontendLocal();
 };
-const AWS_PREFIX: string = "https://reshortt.me";
+const AWS_PREFIX: string = "https://investment.reshortt.me";
 const LOCAL_PREFIX: string = "http://localhost:3005";
 
 const getURL = (
