@@ -11,7 +11,7 @@ import {
 import fetch, { RequestInit } from "node-fetch";
 
 const isFrontendLocal = ():boolean => {
-  return false;
+  return process.env.NODE_ENV === "development"
 }
 
 const isBackendLocal = (): boolean => {
@@ -29,6 +29,9 @@ const AWS_PREFIX:string = "https://reshortt.me"
 const LOCAL_PREFIX:string = "http://localhost:3005"
 
 const getURL = (endpoint:string, params:Record<string, string>={}):string => {
+
+
+  console.log ("NODE_ENV = ", process.env.NODE_ENV)
 
   let prefix:string= ""
   if (isBackendLocal() && isFrontendLocal()) {
