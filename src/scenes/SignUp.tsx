@@ -5,8 +5,8 @@ import { doSignup } from "../APIService";
 function SignUp() {
   const handleSignUpButtonClick = (values: any) => {
     doSignup(values.userID, values.password, values.name).then(
-      (success: boolean) => {
-        if (success) {
+      (response: {success: boolean, message:string}) => {
+        if (response.success) {
           window.location.assign("/login");
           window.alert(
             "Welcome, " +
@@ -14,7 +14,7 @@ function SignUp() {
               ". Your account was successfully created."
           );
         } else {
-          window.alert("Error creating account");
+          window.alert("Error creating account : " + response.message);
         }
       }
     );

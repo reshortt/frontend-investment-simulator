@@ -68,27 +68,27 @@ export const doSignup = async (
   userID: string,
   password: string,
   name: string
-): Promise<boolean> => {
+): Promise<{success:boolean, message:string}> => {
 
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      userID: userID,
+      userID,
       password,
-      name: name,
+      name,
     }),
   };
   const response = await fetch(getURL("/API/signup"), requestOptions);
 
   const status: number = response.status;
-  const json: string = await response.json();
 
   if (status === 200) {
-    return true;
+    return{success:true, message: ""};
   } else {
-    console.log("Signup failed: " + JSON.stringify(json));
-    return false;
+    const responseObj:any = (await response.json()) as object
+    console.log("Signup failed: " + responseObj.message);
+    return {success:false, message: responseObj.message};
   }
 };
 
