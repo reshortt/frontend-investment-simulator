@@ -10,38 +10,31 @@ import {
 } from "./types";
 import fetch, { RequestInit } from "node-fetch";
 
-const IS_BACKEND_LOCAL: boolean = false;
+const IS_BACKEND_LOCAL: boolean = true;
 
 const isFrontendLocal = (): boolean => {
   return process.env.NODE_ENV === "development";
 };
 
 const isBackendLocal = (): boolean => {
-  return process.env.NODE_ENV === "development" ?  IS_BACKEND_LOCAL : false
+  return process.env.NODE_ENV === "production" ? false : IS_BACKEND_LOCAL
 };
 
-const isBackendRemote = (): boolean => {
-  return !isBackendLocal();
-};
+const REMOTE_SERVER: string = "https://investment.reshortt.me";
+const LOCAL_SERVER: string = "http://localhost:3005";
 
-const isFrontendRemote = (): boolean => {
-  return !isFrontendLocal();
-};
-const AWS_PREFIX: string = "https://investment.reshortt.me";
-const LOCAL_PREFIX: string = "http://localhost:3005";
-
-const getURL = (
+// given an endpoint, add the required root depending on location of front and back end
+const constructURL = (
   endpoint: string,
   params: Record<string, string> = {}
 ): string => {
-  console.log("NODE_ENV = ", process.env.NODE_ENV);
 
   let prefix: string = "";
   if (isBackendLocal() && isFrontendLocal()) {
-    prefix = LOCAL_PREFIX;
-  } else if (isFrontendLocal() && isBackendRemote()) {
-    prefix = AWS_PREFIX;
-  } else if (isFrontendRemote() && isBackendRemote()) {
+    prefix = LOCAL_SERVER;
+  } else if (isFrontendLocal() && !isBackendLocal()) {
+    prefix = REMOTE_SERVER;
+  } else if (!isFrontendLocal() && !isBackendLocal()) {
     prefix = "";
   }
 
@@ -80,7 +73,7 @@ export const doSignup = async (
       name,
     }),
   };
-  const response = await fetch(getURL("/API/signup"), requestOptions);
+  const response = await fetch(constructURL("/API/signup"), requestOptions);
 
   const status: number = response.status;
 
@@ -102,7 +95,7 @@ export const doLogin = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userID, password }),
   };
-  const response = await fetch(getURL("/API/login"), requestOptions);
+  const response = await fetch(constructURL("/API/login"), requestOptions);
 
   switch (response.status) {
     case 200:
@@ -126,7 +119,7 @@ export const doLogin = async (
 
 export const getAccount = async (): Promise<Account | null> => {
   const requestOptions = createRequestAuthorization();
-  const response = await fetch(getURL("/API/getAccount"), requestOptions);
+  const response = await fetch(constructURL("/API/getAccount"), requestOptions);
 
   switch (response.status) {
     case 200:
@@ -147,7 +140,7 @@ export const getAccount = async (): Promise<Account | null> => {
 
 export const getUserInfo = async (): Promise<UserInfo | null> => {
   const requestOptions = createRequestAuthorization();
-  const response = await fetch(getURL("/API/getUserInfo"), requestOptions);
+  const response = await fetch(constructURL("/API/getUserInfo"), requestOptions);
 
   switch (response.status) {
     case 200:
@@ -169,7 +162,7 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
 export const getBalance = async (yesterday: boolean): Promise<number> => {
   const requestOptions = createRequestAuthorization();
 
-  const urlString = getURL("/API/getBalance", { yesterday: `${yesterday}` });
+  const urlString = constructURL("/API/getBalance", { yesterday: `${yesterday}` });
   const response = await fetch(urlString, requestOptions);
 
   switch (response.status) {
@@ -192,7 +185,7 @@ export const getBalance = async (yesterday: boolean): Promise<number> => {
 export const getAssets = async (): Promise<Asset[]> => {
   const requestOptions = createRequestAuthorization();
 
-  const response = await fetch(getURL("/API/getAssets"), requestOptions);
+  const response = await fetch(constructURL("/API/getAssets"), requestOptions);
 
   switch (response.status) {
     case 200:
@@ -216,7 +209,7 @@ export const getAssets = async (): Promise<Asset[]> => {
 export const getTransactions = async (): Promise<Transaction[]> => {
   const requestOptions = createRequestAuthorization();
 
-  const response = await fetch(getURL("/API/getTransactions"), requestOptions);
+  const response = await fetch(constructURL("/API/getTransactions"), requestOptions);
 
   switch (response.status) {
     case 200:
@@ -240,7 +233,7 @@ export const getTransactions = async (): Promise<Transaction[]> => {
 export const getCash = async (): Promise<number> => {
   const requestOptions = createRequestAuthorization();
 
-  const response = await fetch(getURL("/API/getCash"), requestOptions);
+  const response = await fetch(constructURL("/API/getCash"), requestOptions);
 
   switch (response.status) {
     case 200:
@@ -268,7 +261,7 @@ export const lookupTicker = async (
   // TODO: credentials not needed for stocklookup. ...remove
   const requestOptions = createRequestAuthorization();
 
-  const urlString: string = getURL("/API/lookupTicker", {
+  const urlString: string = constructURL("/API/lookupTicker", {
     tickerSymbol: tickerSymbol,
   });
 
@@ -298,7 +291,7 @@ export async function getHistoricalDividends(
 ): Promise<Dividend[]> {
   const requestOptions = createRequestAuthorization();
 
-  const queryURLString = getURL("/API/getHistoricalDividends", {
+  const queryURLString = constructURL("/API/getHistoricalDividends", {
     ticker: symbol,
   });
   const response = await fetch(queryURLString, requestOptions);
@@ -321,7 +314,7 @@ export async function getStockPriceOnDate(
 ): Promise<number> {
   const requestOptions = createRequestAuthorization();
 
-  const queryURLString = getURL("/API/getStockPriceOnDate", {
+  const queryURLString = constructURL("/API/getStockPriceOnDate", {
     ticker: symbol,
     date: date.toDateString(),
   });
@@ -347,7 +340,7 @@ export async function getHistoricalPrices(
 ): Promise<HistoricalPrice[]> {
   const requestOptions = createRequestAuthorization();
 
-  const queryURLString = getURL("/API/getHistoricalPrices", {
+  const queryURLString = constructURL("/API/getHistoricalPrices", {
     ticker: symbol,
     date: startDate.toDateString(),
   });
@@ -387,7 +380,7 @@ export const buyAsset = async (
 
   const sharesString: string = shares.toString();
   const priceString: string = price.toString();
-  const urlString: string = getURL("/API/buyAsset", {
+  const urlString: string = constructURL("/API/buyAsset", {
     tickerSymbol: symbol,
     shares: sharesString,
     price: priceString,
@@ -423,7 +416,7 @@ export const sellAsset = async (
 
   const sharesString: string = shares.toString();
   const priceString: string = price.toString();
-  const urlString = getURL("/API/sellAsset", {
+  const urlString = constructURL("/API/sellAsset", {
     tickerSymbol: symbol,
     shares: sharesString,
     price: priceString,
@@ -453,7 +446,7 @@ export const getStockPrice = async (
   // TODO: credentials not needed for stocklookup.remove
   const requestOptions = createRequestAuthorization();
 
-  const urlString: string = getURL("/API/getStockPrice", {
+  const urlString: string = constructURL("/API/getStockPrice", {
     tickerSymbol: tickerSymbol,
   });
   const response = await fetch(urlString, requestOptions);
