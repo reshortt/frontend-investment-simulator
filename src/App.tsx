@@ -6,6 +6,7 @@ import NavPane from "./scenes/NavPane";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SignUp from "./scenes/SignUp";
 import { Helmet as ReactHelmet } from "react-helmet";
+import { USER_NAME } from "./constants";
 
 export default function App() {
   return (
@@ -14,7 +15,7 @@ export default function App() {
     <Router>
       <div>
       <ReactHelmet >
-      <title>Investment Simulator</title>
+      <title>{(isLoggedIn() ? (sessionStorage.getItem(USER_NAME) + " - ") : "") +  "Investment Simulator"}</title>
         </ReactHelmet>
         <Header />
         <br/>

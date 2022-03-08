@@ -1,4 +1,4 @@
-import { AUTH_TOKEN_KEY } from "./constants";
+import { AUTH_TOKEN_KEY, USER_ID, USER_NAME } from "./constants";
 import {
   Asset,
   Dividend,
@@ -23,7 +23,6 @@ const isBackendLocal = (): boolean => {
 const REMOTE_SERVER: string = "https://investment.reshortt.me";
 const LOCAL_SERVER: string = "http://localhost:3005";
 
-// given an endpoint, add the required root depending on location of front and back end
 const constructURL = (
   endpoint: string,
   params: Record<string, string> = {}
@@ -57,6 +56,8 @@ export const isLoggedIn = (): boolean =>
 
 export const doLogout = () => {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  sessionStorage.removeItem(USER_ID);
+  sessionStorage.removeItem(USER_NAME);
 };
 
 export const doSignup = async (
@@ -101,18 +102,18 @@ export const doLogin = async (
     case 200:
       const responseObj = await response.json();
       sessionStorage.setItem(AUTH_TOKEN_KEY, responseObj.token);
+      sessionStorage.setItem(USER_NAME, responseObj.userName);
+      sessionStorage.setItem(USER_ID, responseObj.userID);
+      
       console.log("Successful login: " + responseObj);
       return true;
 
     case 401:
     case 400:
-      // todo: better way to show error
-      console.log("unsuccessful login for user " + userID);
       return false;
 
     default:
       // 500 is possible for critical server erropr
-      console.log("unexpected login response");
       return false;
   }
 };
