@@ -173,7 +173,7 @@ export default function Sell() {
             ></Input>
           </Form.Item>
 
-          <Form.Item label="Commission">
+          <Form.Item label="Broker Gouging">
             <label>{formatCurrency(COMMISSION)}</label>
           </Form.Item>
 
